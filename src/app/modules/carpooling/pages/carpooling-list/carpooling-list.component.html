@@ -1,0 +1,112 @@
+<section>
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+      <h1 class="h3 fw-bold mb-1">
+        <i class="bi bi-car-front-fill text-primary me-2"></i>Directorio Comunitario y Carpooling
+      </h1>
+      <p class="text-muted small mb-0">
+        Sesión activa: <strong>{{ sesionService.usuarioActivo() }}</strong>
+      </p>
+    </div>
+
+    <a routerLink="/carpooling/nuevo" class="btn btn-primary">
+      <i class="bi bi-plus-circle me-1"></i>Publicar Nueva Ruta
+    </a>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <div class="text-muted small">Rutas activas</div>
+            <div class="fs-4 fw-bold text-primary">{{ totalRutasActivas() }}</div>
+          </div>
+          <i class="bi bi-signpost-split fs-2 text-primary opacity-50"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <div class="text-muted small">Asientos libres en comunidad</div>
+            <div class="fs-4 fw-bold text-success">{{ totalAsientosLibres() }}</div>
+          </div>
+          <i class="bi bi-people-fill fs-2 text-success opacity-50"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <div class="text-muted small">Mis viajes (conductor o pasajero)</div>
+            <div class="fs-4 fw-bold text-info">{{ misViajes() }}</div>
+          </div>
+          <i class="bi bi-person-badge fs-2 text-info opacity-50"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (mensajeAlerta()) {
+    <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">
+      <i class="bi bi-check-circle-fill me-2"></i>
+      <div>{{ mensajeAlerta() }}</div>
+      <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarAlerta()"></button>
+    </div>
+  }
+
+  @if (carpoolingService.error()) {
+    <div class="alert alert-danger d-flex align-items-center" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <div>{{ carpoolingService.error() }}</div>
+    </div>
+  }
+
+  <app-filtro-rutas
+    [totalResultados]="rutasFiltradas().length"
+    (filtroCambiado)="actualizarFiltro($event)"
+  />
+
+  @if (carpoolingService.cargando()) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando rutas...</span>
+      </div>
+      <p class="text-muted small mt-2">Cargando rutas disponibles...</p>
+    </div>
+  } @else {
+    <div class="row g-3">
+      @for (ruta of rutasFiltradas(); track ruta.id) {
+        <div class="col-md-6 col-lg-4">
+          <app-ruta-card
+            [ruta]="ruta"
+            [usuarioActivo]="sesionService.usuarioActivo()"
+            (reservar)="onReservarAsiento($event)"
+            (cancelarAsiento)="onCancelarAsiento($event)"
+            (eliminar)="onEliminarRuta($event)"
+          />
+        </div>
+      } @empty {
+        <div class="col-12">
+          <div class="card border-0 shadow-sm text-center py-5">
+            <div class="card-body">
+              <i class="bi bi-geo-alt fs-1 text-muted d-block mb-2"></i>
+              <h2 class="h5 fw-semibold">No se encontraron rutas</h2>
+              <p class="text-muted small mb-3">
+                No hay viajes que coincidan con los filtros seleccionados.
+              </p>
+              <a routerLink="/carpooling/nuevo" class="btn btn-outline-primary btn-sm">
+                Publicar una nueva ruta
+              </a>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</section>

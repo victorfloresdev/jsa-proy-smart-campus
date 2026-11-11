@@ -1,0 +1,131 @@
+<div class="card h-100 shadow-sm border-0">
+  <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center gap-2 py-2">
+    <div class="d-flex align-items-center gap-1 flex-wrap">
+      <span
+        class="badge"
+        [class.bg-success]="ruta.estado === 'Activa'"
+        [class.bg-danger]="ruta.estado === 'Completa'"
+        [class.bg-secondary]="ruta.estado === 'Cancelada'"
+      >
+        {{ ruta.estado }}
+      </span>
+      <span class="badge text-bg-primary">{{ ruta.turno | uppercase }}</span>
+      @if (esAutor()) {
+        <span class="badge text-bg-info">Tu publicación</span>
+      }
+    </div>
+    <span class="fw-bold text-success">
+      {{ ruta.aporteSugerido | currency:'PEN':'S/ ':'1.2-2' }}
+    </span>
+  </div>
+
+  <div class="card-body d-flex flex-column gap-2">
+    <div>
+      <h5 class="card-title h6 fw-bold mb-1">
+        <i class="bi bi-geo-alt-fill text-primary me-1"></i>
+        {{ ruta.origen }}
+        <i class="bi bi-arrow-right mx-1 text-muted"></i>
+        {{ ruta.destino }}
+      </h5>
+      <p class="text-muted small mb-0">
+        <strong>Ruta:</strong> {{ ruta.puntosIntermedios }}
+      </p>
+    </div>
+
+    <div class="small d-flex flex-column gap-1 bg-light rounded p-2">
+      <div>
+        <i class="bi bi-calendar-event me-1 text-primary"></i>
+        <strong>Salida:</strong> {{ ruta.fechaSalida | date:'dd/MM/yyyy':'UTC' }} &middot; {{ ruta.horaSalida }}
+      </div>
+      <div>
+        <i class="bi bi-person-circle me-1 text-primary"></i>
+        <strong>Conductor:</strong> {{ ruta.autor }}
+      </div>
+      <div>
+        <i class="bi bi-car-front me-1 text-primary"></i>
+        <strong>Vehículo:</strong> {{ ruta.vehiculo }}
+      </div>
+      <div>
+        <i class="bi bi-telephone me-1 text-primary"></i>
+        <strong>Contacto:</strong> {{ ruta.telefonoContacto }}
+      </div>
+      <div>
+        <i class="bi bi-people-fill me-1 text-primary"></i>
+        <strong>Asientos disponibles:</strong>
+        <span [class.text-danger]="ruta.asientosDisponibles === 0" class="fw-semibold">
+          {{ ruta.asientosDisponibles }} / {{ ruta.asientosTotales }}
+        </span>
+      </div>
+    </div>
+
+    @if (ruta.observaciones) {
+      <p class="small text-muted fst-italic mb-0">
+        "{{ ruta.observaciones }}"
+      </p>
+    }
+
+    <div class="mt-1">
+      <div class="small fw-semibold mb-1">Pasajeros inscritos:</div>
+      <ul class="list-unstyled small mb-0">
+        @for (pasajero of ruta.pasajeros; track pasajero) {
+          <li class="text-secondary">
+            <i class="bi bi-check2-circle text-success me-1"></i>{{ pasajero }}
+          </li>
+        } @empty {
+          <li class="text-muted fst-italic">Aún no hay pasajeros inscritos</li>
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="card-footer bg-white border-top pt-2 pb-3 d-flex flex-wrap gap-2 justify-content-between align-items-center">
+    @if (puedeReservar()) {
+      <button
+        type="button"
+        class="btn btn-primary btn-sm w-100"
+        (click)="reservar.emit(ruta)"
+      >
+        <i class="bi bi-ticket-perforated me-1"></i>Reservar Asiento
+      </button>
+    }
+
+    @if (yaEstaInscrito()) {
+      <div class="w-100 d-flex flex-column gap-2">
+        <span class="badge text-bg-success py-2">
+          <i class="bi bi-check-circle-fill me-1"></i>Ya tienes un asiento en este viaje
+        </span>
+        <button
+          type="button"
+          class="btn btn-outline-warning btn-sm"
+          (click)="cancelarAsiento.emit(ruta)"
+        >
+          <i class="bi bi-x-circle me-1"></i>Cancelar mi asiento
+        </button>
+      </div>
+    }
+
+    @if (esAutor()) {
+      <div class="w-100 d-flex gap-2">
+        <a
+          class="btn btn-outline-primary btn-sm flex-grow-1"
+          [routerLink]="['/carpooling/editar', ruta.id]"
+        >
+          <i class="bi bi-pencil-square me-1"></i>Editar
+        </a>
+        <button
+          type="button"
+          class="btn btn-outline-danger btn-sm flex-grow-1"
+          (click)="ruta.id && eliminar.emit(ruta.id)"
+        >
+          <i class="bi bi-trash me-1"></i>Eliminar ruta
+        </button>
+      </div>
+    }
+
+    @if (!puedeReservar() && !yaEstaInscrito() && !esAutor()) {
+      <span class="text-muted small w-100 text-center">
+        Sin cupos disponibles para reservar
+      </span>
+    }
+  </div>
+</div>

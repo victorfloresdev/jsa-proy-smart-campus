@@ -4,6 +4,7 @@ import { TicketListComponent } from './modules/tickets/pages/ticket-list/ticket-
 import { ObjetosTableroComponent } from './modules/objetos-perdidos/pages/objetos-tablero/objetos-tablero.component';
 import { ReservasVistaComponent } from './modules/reservas/pages/reservas-vista/reservas-vista.component';
 import { CarpoolingListComponent } from './modules/carpooling/pages/carpooling-list/carpooling-list.component';
+import { CarpoolingFormComponent } from './modules/carpooling/pages/carpooling-form/carpooling-form.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'carpooling', pathMatch: 'full' },
@@ -12,5 +13,7 @@ export const routes: Routes = [
   { path: 'objetos-perdidos', component: ObjetosTableroComponent },
   { path: 'reservas', component: ReservasVistaComponent },
   { path: 'carpooling', component: CarpoolingListComponent },
+  { path: 'carpooling/nuevo', component: CarpoolingFormComponent },
+  { path: 'carpooling/editar/:id', component: CarpoolingFormComponent },
   { path: '**', redirectTo: 'carpooling' }
 ];
