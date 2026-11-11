@@ -1,0 +1,249 @@
+{
+  "usuarios": [
+    "Ana García (Ing. Sistemas)",
+    "Luis Mendoza (Arquitectura)",
+    "Carlos Rojas (Administración)",
+    "Elena Vargas (Derecho)",
+    "Mg. Anthony Távara (Docente)"
+  ],
+  "pedidos": [
+    {
+      "id": 1,
+      "plato": "Lomo Saltado Ejecutivo",
+      "categoria": "Fondo",
+      "precio": 14.50,
+      "cantidad": 2,
+      "total": 29.00,
+      "fecha": "2026-11-11T12:15:00.000Z",
+      "estado": "En preparación",
+      "autor": "Ana García (Ing. Sistemas)"
+    },
+    {
+      "id": 2,
+      "plato": "Pollo a la Plancha con Ensalada",
+      "categoria": "Saludable",
+      "precio": 12.00,
+      "cantidad": 1,
+      "total": 12.00,
+      "fecha": "2026-11-11T12:30:00.000Z",
+      "estado": "Entregado",
+      "autor": "Carlos Rojas (Administración)"
+    },
+    {
+      "id": 3,
+      "plato": "Jugo de Maracuyá + Sándwich Triple",
+      "categoria": "Cafetería",
+      "precio": 9.50,
+      "cantidad": 1,
+      "total": 9.50,
+      "fecha": "2026-11-11T09:45:00.000Z",
+      "estado": "En preparación",
+      "autor": "Mg. Anthony Távara (Docente)"
+    }
+  ],
+  "tickets": [
+    {
+      "id": 1,
+      "titulo": "Proyector sin señal HDMI",
+      "ambiente": "Aula 402",
+      "pabellon": "Pabellón B",
+      "prioridad": "Alta",
+      "descripcion": "El cable HDMI de la consola docente no transmite imagen al proyector multimedia.",
+      "estado": "Pendiente",
+      "fechaReporte": "2026-11-10",
+      "autor": "Luis Mendoza (Arquitectura)"
+    },
+    {
+      "id": 2,
+      "titulo": "Aire acondicionado con goteo",
+      "ambiente": "Laboratorio de Cómputo 3",
+      "pabellon": "Pabellón A",
+      "prioridad": "Media",
+      "descripcion": "La unidad split gotea cerca de la fila lateral de computadoras durante la tarde.",
+      "estado": "En Revisión",
+      "fechaReporte": "2026-11-11",
+      "autor": "Ana García (Ing. Sistemas)"
+    },
+    {
+      "id": 3,
+      "titulo": "Silla con respaldo suelto",
+      "ambiente": "Aula 205",
+      "pabellon": "Pabellón C",
+      "prioridad": "Baja",
+      "descripcion": "Una carpeta unipersonal ubicada al fondo tiene los tornillos del respaldo flojos.",
+      "estado": "Resuelto",
+      "fechaReporte": "2026-11-09",
+      "autor": "Elena Vargas (Derecho)"
+    }
+  ],
+  "objetos": [
+    {
+      "id": 1,
+      "titulo": "Calculadora Científica Casio FX-991",
+      "tipo": "Encontrado",
+      "categoria": "Académico",
+      "ubicacion": "Biblioteca Central - Piso 2",
+      "fechaSuceso": "2026-11-10",
+      "descripcion": "Encontrada sobre la mesa de estudio grupal 4 con funda negra.",
+      "imagenUrl": "https://images.unsplash.com/photo-1587145820266-a5951ee6f620?w=400",
+      "estado": "Activo",
+      "contacto": "Recepción de Biblioteca o 999888777",
+      "autor": "Carlos Rojas (Administración)"
+    },
+    {
+      "id": 2,
+      "titulo": "Termo Metálico Azul",
+      "tipo": "Perdido",
+      "categoria": "Accesorios",
+      "ubicacion": "Cafetería Principal",
+      "fechaSuceso": "2026-11-11",
+      "descripcion": "Termo de acero azul marino con sticker de facultad de ingeniería.",
+      "imagenUrl": "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400",
+      "estado": "Activo",
+      "contacto": "987123456",
+      "autor": "Ana García (Ing. Sistemas)"
+    },
+    {
+      "id": 3,
+      "titulo": "Cargador Laptop USB-C 65W",
+      "tipo": "Encontrado",
+      "categoria": "Tecnología",
+      "ubicacion": "Pabellón B - Aula 301",
+      "fechaSuceso": "2026-11-08",
+      "descripcion": "Dejado conectado en el tomacorriente de la primera fila.",
+      "imagenUrl": "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400",
+      "estado": "Recuperado",
+      "contacto": "Seguridad Pabellón B",
+      "autor": "Mg. Anthony Távara (Docente)"
+    }
+  ],
+  "reservas": [
+    {
+      "id": 1,
+      "espacio": "Cubículo de Estudio B-104",
+      "tipoEspacio": "Sala de Estudio",
+      "fecha": "2026-11-12",
+      "bloqueHorario": "10:00 - 12:00",
+      "motivo": "Preparación de proyecto final JavaScript Avanzado",
+      "cantidadPersonas": 4,
+      "estado": "Confirmada",
+      "autor": "Elena Vargas (Derecho)"
+    },
+    {
+      "id": 2,
+      "espacio": "Laboratorio de Redes A-202",
+      "tipoEspacio": "Laboratorio",
+      "fecha": "2026-11-12",
+      "bloqueHorario": "14:00 - 16:00",
+      "motivo": "Práctica de configuración de switches y routing",
+      "cantidadPersonas": 6,
+      "estado": "Confirmada",
+      "autor": "Ana García (Ing. Sistemas)"
+    },
+    {
+      "id": 3,
+      "espacio": "Sala de Dibujo C-101",
+      "tipoEspacio": "Taller",
+      "fecha": "2026-11-13",
+      "bloqueHorario": "08:00 - 10:00",
+      "motivo": "Revisión de maquetas de diseño arquitectónico",
+      "cantidadPersonas": 5,
+      "estado": "Confirmada",
+      "autor": "Luis Mendoza (Arquitectura)"
+    },
+    {
+      "id": 4,
+      "espacio": "Losa Deportiva 1",
+      "tipoEspacio": "Deportivo",
+      "fecha": "2026-11-13",
+      "bloqueHorario": "18:00 - 20:00",
+      "motivo": "Entrenamiento equipo interfacultades",
+      "cantidadPersonas": 10,
+      "estado": "Pendiente",
+      "autor": "Carlos Rojas (Administración)"
+    }
+  ],
+  "rutas": [
+    {
+      "id": 1,
+      "origen": "Plaza de Armas de Piura",
+      "destino": "Campus UTP",
+      "puntosIntermedios": "Av. Grau, Óvalo Cáceres, Av. Vice",
+      "fechaSalida": "2026-11-12",
+      "horaSalida": "07:15",
+      "turno": "Mañana",
+      "vehiculo": "Toyota Corolla Cross - Blanco (Placa P1A-452)",
+      "asientosTotales": 4,
+      "asientosDisponibles": 2,
+      "aporteSugerido": 5.00,
+      "telefonoContacto": "987654321",
+      "estado": "Activa",
+      "autor": "Ana García (Ing. Sistemas)",
+      "pasajeros": [
+        "Carlos Rojas (Administración)",
+        "Elena Vargas (Derecho)"
+      ],
+      "observaciones": "Salida puntual. Espacio en maletera para mochilas o maquetas."
+    },
+    {
+      "id": 2,
+      "origen": "Campus UTP",
+      "destino": "Real Plaza / Centro Comercial",
+      "puntosIntermedios": "Av. Vice, Av. Sánchez Cerro, Av. Gullman",
+      "fechaSalida": "2026-11-12",
+      "horaSalida": "15:30",
+      "turno": "Tarde",
+      "vehiculo": "Hyundai Tucson - Gris (Placa B4M-819)",
+      "asientosTotales": 3,
+      "asientosDisponibles": 0,
+      "aporteSugerido": 4.50,
+      "telefonoContacto": "965432198",
+      "estado": "Completa",
+      "autor": "Luis Mendoza (Arquitectura)",
+      "pasajeros": [
+        "Ana García (Ing. Sistemas)",
+        "Carlos Rojas (Administración)",
+        "Elena Vargas (Derecho)"
+      ],
+      "observaciones": "Cupo lleno. Punto de encuentro en puerta principal del campus."
+    },
+    {
+      "id": 3,
+      "origen": "Campus UTP",
+      "destino": "Urbanización Miraflores - Castilla",
+      "puntosIntermedios": "Av. Cáceres, Puente Bolognesi, Av. Guardia Civil",
+      "fechaSalida": "2026-11-12",
+      "horaSalida": "21:15",
+      "turno": "Noche",
+      "vehiculo": "Kia Sportage - Negro (Placa C9T-304)",
+      "asientosTotales": 4,
+      "asientosDisponibles": 3,
+      "aporteSugerido": 6.00,
+      "telefonoContacto": "943218765",
+      "estado": "Activa",
+      "autor": "Mg. Anthony Távara (Docente)",
+      "pasajeros": [
+        "Luis Mendoza (Arquitectura)"
+      ],
+      "observaciones": "Salida 10 minutos después de finalizar el último bloque de clases."
+    },
+    {
+      "id": 4,
+      "origen": "Óvalo Grau",
+      "destino": "Campus UTP",
+      "puntosIntermedios": "Av. Loreto, Av. San Martín, Av. Vice",
+      "fechaSalida": "2026-11-13",
+      "horaSalida": "07:45",
+      "turno": "Mañana",
+      "vehiculo": "Suzuki Swift - Azul (Placa D2K-117)",
+      "asientosTotales": 4,
+      "asientosDisponibles": 4,
+      "aporteSugerido": 4.00,
+      "telefonoContacto": "912345678",
+      "estado": "Activa",
+      "autor": "Carlos Rojas (Administración)",
+      "pasajeros": [],
+      "observaciones": "Aire acondicionado activo. Confirmar por WhatsApp antes de abordar."
+    }
+  ]
+}

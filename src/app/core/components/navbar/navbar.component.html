@@ -1,0 +1,67 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold d-flex align-items-center gap-2" routerLink="/carpooling">
+      <i class="bi bi-mortarboard-fill"></i>
+      <span>SmartCampus</span>
+    </a>
+
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSmartCampus"
+      aria-controls="navbarSmartCampus"
+      aria-expanded="false"
+      aria-label="Mostrar navegación"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSmartCampus">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/cafeteria" routerLinkActive="active fw-semibold">
+            <i class="bi bi-cup-hot me-1"></i>Cafetería
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/tickets" routerLinkActive="active fw-semibold">
+            <i class="bi bi-tools me-1"></i>Mantenimiento
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/objetos-perdidos" routerLinkActive="active fw-semibold">
+            <i class="bi bi-search me-1"></i>Objetos Perdidos
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/reservas" routerLinkActive="active fw-semibold">
+            <i class="bi bi-calendar-check me-1"></i>Reserva de Salas
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/carpooling" routerLinkActive="active fw-semibold">
+            <i class="bi bi-car-front-fill me-1"></i>Carpooling
+          </a>
+        </li>
+      </ul>
+
+      <div class="d-flex align-items-center gap-2 ms-lg-3">
+        <span class="badge bg-light text-primary d-none d-xl-inline-flex align-items-center gap-1">
+          <i class="bi bi-person-check-fill"></i>
+          Sesión activa
+        </span>
+        <select
+          class="form-select form-select-sm selector-sesion"
+          aria-label="Seleccionar perfil activo"
+          [value]="sesionService.usuarioActivo()"
+          (change)="sesionService.cambiarUsuario($any($event.target).value)"
+        >
+          @for (perfil of sesionService.perfilesDisponibles; track perfil) {
+            <option [value]="perfil">{{ perfil }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </div>
+</nav>
