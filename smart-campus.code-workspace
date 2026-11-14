@@ -1,0 +1,13 @@
+{
+  "folders": [
+    {
+      "name": "Frontend (Angular)",
+      "path": "frontend"
+    },
+    {
+      "name": "Backend (Express)",
+      "path": "backend"
+    }
+  ],
+  "settings": {}
+}
