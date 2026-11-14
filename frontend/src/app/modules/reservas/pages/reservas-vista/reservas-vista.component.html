@@ -1,0 +1,84 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2><i class="bi bi-calendar-check me-2 text-primary"></i>Reserva de Salas y Espacios</h2>
+    <p class="text-muted mb-0">Consulta disponibilidad y gestiona tus reservas universitarias</p>
+  </div>
+  <a routerLink="/reservas/nueva" class="btn btn-primary">
+    <i class="bi bi-plus-lg me-1"></i> Nueva Reserva
+  </a>
+</div>
+
+<div class="card mb-4 shadow-sm">
+  <div class="card-body">
+    <div class="row align-items-center">
+      <div class="col-md-4">
+        <label class="form-label fw-bold">Seleccionar Fecha de Consulta:</label>
+        <input 
+          type="date" 
+          class="form-control" 
+          [ngModel]="fechaFiltro()" 
+          (ngModelChange)="fechaFiltro.set($event)">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-white py-3">
+    <h5 class="card-title mb-0">Matriz de Disponibilidad ({{ fechaFiltro() | date:'dd/MM/yyyy':'UTC' }})</h5>
+  </div>
+  <div class="card-body">
+    <app-disponibilidad-grid 
+      [reservas]="reservaService.reservas()" 
+      [fechaSeleccionada]="fechaFiltro()"
+      (reservarBloque)="onBloqueSeleccionado($event)">
+    </app-disponibilidad-grid>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-header bg-white py-3">
+    <h5 class="card-title mb-0">Reservas Programadas para esta Fecha</h5>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Espacio</th>
+            <th>Horario</th>
+            <th>Solicitante</th>
+            <th>Motivo</th>
+            <th>Personas</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (reserva of reservasFiltradas(); track reserva.id) {
+            <tr>
+              <td class="fw-bold">{{ reserva.espacio }}</td>
+              <td><span class="badge bg-secondary">{{ reserva.bloqueHorario }}</span></td>
+              <td>{{ reserva.autor }}</td>
+              <td>{{ reserva.motivo }}</td>
+              <td><i class="bi bi-people me-1"></i>{{ reserva.cantidadPersonas }}</td>
+              <td class="text-center">
+                @if (reserva.autor === sesionService.usuarioActivo()) {
+                  <button class="btn btn-sm btn-outline-danger" (click)="cancelarReserva(reserva.id)">
+                    <i class="bi bi-trash me-1"></i> Cancelar Reserva
+                  </button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="text-center py-4 text-muted">
+                <i class="bi bi-calendar-x fs-3 d-block mb-2"></i>
+                No hay reservas registradas para el {{ fechaFiltro() | date:'dd/MM/yyyy':'UTC' }}.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
