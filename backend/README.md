@@ -40,10 +40,14 @@ npm start
 
 ```
 backend/
-├── data/
-│   └── db.json         # Archivo de datos db.json
 ├── src/
-│   └── index.ts        # Punto de entrada inicial Express (TypeScript)
+│   ├── app.ts          # Configuración de Express, middlewares y rutas
+│   ├── server.ts       # Punto de entrada y arranque del servidor
+│   ├── controllers/    # Controladores de la aplicación
+│   ├── models/         # Modelos e interfaces
+│   ├── routes/         # Definición de rutas y endpoints
+│   └── data/
+│       └── db.json     # Origen de datos JSON inicial
 ├── .env.example
 ├── .gitignore
 ├── package.json
