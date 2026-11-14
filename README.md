@@ -12,10 +12,14 @@ Proyecto integral **Smart Campus**, estructurado con arquitectura cliente-servid
 ```
 jsa-proy-smart-campus/
 ├── backend/                  # Servidor Express API REST (TypeScript)
-│   ├── data/
-│   │   └── db.json           # Origen de datos JSON inicial
 │   ├── src/
-│   │   └── index.ts          # Servidor Express con TypeScript
+│   │   ├── app.ts            # Configuración de Express y middlewares
+│   │   ├── server.ts         # Punto de entrada y arranque del servidor
+│   │   ├── controllers/      # Controladores de la API
+│   │   ├── models/           # Modelos e interfaces
+│   │   ├── routes/           # Definición de rutas
+│   │   └── data/
+│   │       └── db.json       # Origen de datos JSON inicial
 │   ├── .env.example          # Plantilla de variables de entorno
 │   ├── package.json          # Dependencias y scripts
 │   ├── tsconfig.json         # Configuración TypeScript
