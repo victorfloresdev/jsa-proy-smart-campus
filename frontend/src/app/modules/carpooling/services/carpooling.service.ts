@@ -28,7 +28,7 @@ export class CarpoolingService {
         this._cargando.set(false);
       },
       error: () => {
-        this._error.set('No se pudieron cargar las rutas. Verifica que json-server esté activo en el puerto 3000.');
+        this._error.set('No se pudieron cargar las rutas. Verifica que el servidor backend esté activo en el puerto 3000.');
         this._cargando.set(false);
       }
     });

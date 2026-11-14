@@ -129,7 +129,7 @@ export class CarpoolingFormComponent implements OnInit {
       },
       error: () => {
         this.guardando = false;
-        this.errorCarga = 'No se pudo registrar la ruta. Verifica que json-server esté activo.';
+        this.errorCarga = 'No se pudo registrar la ruta. Verifica que el servidor backend esté activo.';
       }
     });
   }
