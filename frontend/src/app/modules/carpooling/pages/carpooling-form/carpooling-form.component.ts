@@ -68,6 +68,11 @@ export class CarpoolingFormComponent implements OnInit {
     }
   }
 
+  // Getter para acceso directo a controles (como en flota-app)
+  get f() {
+    return this.form.controls;
+  }
+
   esInvalido(campo: string): boolean {
     const control = this.form.get(campo);
     return !!(control && control.invalid && (control.touched || this.enviado));

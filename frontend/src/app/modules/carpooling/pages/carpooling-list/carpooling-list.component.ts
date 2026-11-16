@@ -1,15 +1,15 @@
+import { CurrencyPipe, DatePipe, UpperCasePipe } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { SesionService } from '../../../../core/services/sesion.service';
-import { FiltroRutasComponent } from '../../components/filtro-rutas/filtro-rutas.component';
-import { RutaCardComponent } from '../../components/ruta-card/ruta-card.component';
-import { FiltroCarpooling, RutaCarpooling } from '../../models/ruta-carpooling.model';
+import { RutaCarpooling } from '../../models/ruta-carpooling.model';
 import { CarpoolingService } from '../../services/carpooling.service';
 
 @Component({
   selector: 'app-carpooling-list',
   standalone: true,
-  imports: [RouterLink, FiltroRutasComponent, RutaCardComponent],
+  imports: [RouterLink, FormsModule, CurrencyPipe, DatePipe, UpperCasePipe],
   templateUrl: './carpooling-list.component.html',
   styleUrl: './carpooling-list.component.css'
 })
@@ -17,46 +17,42 @@ export class CarpoolingListComponent implements OnInit {
   readonly carpoolingService = inject(CarpoolingService);
   readonly sesionService = inject(SesionService);
 
-  filtroActual = signal<FiltroCarpooling>({
-    terminoBusqueda: '',
-    turno: 'Todos',
-    soloDisponibles: false,
-    soloMisRutas: false
-  });
+  // Filtros reactivos con Signals
+  terminoBusqueda = signal<string>('');
+  turno = signal<string>('Todos');
+  soloDisponibles = signal<boolean>(false);
+  soloMisRutas = signal<boolean>(false);
 
   mensajeAlerta = signal<string | null>(null);
 
+  // Lista filtrada reactiva (computed)
   readonly rutasFiltradas = computed(() => {
     const rutas = this.carpoolingService.rutas();
-    const filtro = this.filtroActual();
+    const termino = this.terminoBusqueda().trim().toLowerCase();
+    const turnoSeleccionado = this.turno();
+    const filtroDisponibles = this.soloDisponibles();
+    const filtroMisRutas = this.soloMisRutas();
     const usuario = this.sesionService.usuarioActivo();
-    const termino = filtro.terminoBusqueda.trim().toLowerCase();
 
     return rutas.filter((ruta) => {
       if (termino) {
-        const coincideTexto =
+        const coincide =
           ruta.origen.toLowerCase().includes(termino) ||
           ruta.destino.toLowerCase().includes(termino) ||
           ruta.puntosIntermedios.toLowerCase().includes(termino) ||
           ruta.autor.toLowerCase().includes(termino);
-        if (!coincideTexto) {
-          return false;
-        }
+        if (!coincide) return false;
       }
 
-      if (filtro.turno !== 'Todos' && ruta.turno !== filtro.turno) {
+      if (turnoSeleccionado !== 'Todos' && ruta.turno !== turnoSeleccionado) {
         return false;
       }
 
-      if (filtro.soloDisponibles && ruta.asientosDisponibles <= 0) {
+      if (filtroDisponibles && ruta.asientosDisponibles <= 0) {
         return false;
       }
 
-      if (
-        filtro.soloMisRutas &&
-        ruta.autor !== usuario &&
-        !ruta.pasajeros.includes(usuario)
-      ) {
+      if (filtroMisRutas && ruta.autor !== usuario && !ruta.pasajeros.includes(usuario)) {
         return false;
       }
 
@@ -64,6 +60,7 @@ export class CarpoolingListComponent implements OnInit {
     });
   });
 
+  // KPIs
   readonly totalRutasActivas = computed(() =>
     this.carpoolingService.rutas().filter((r) => r.estado === 'Activa').length
   );
@@ -86,8 +83,29 @@ export class CarpoolingListComponent implements OnInit {
     this.carpoolingService.listar();
   }
 
-  actualizarFiltro(nuevoFiltro: FiltroCarpooling): void {
-    this.filtroActual.set(nuevoFiltro);
+  // Helpers para la tarjeta (card)
+  esAutor(ruta: RutaCarpooling): boolean {
+    return ruta.autor === this.sesionService.usuarioActivo();
+  }
+
+  yaEstaInscrito(ruta: RutaCarpooling): boolean {
+    return ruta.pasajeros.includes(this.sesionService.usuarioActivo());
+  }
+
+  puedeReservar(ruta: RutaCarpooling): boolean {
+    return (
+      !this.esAutor(ruta) &&
+      !this.yaEstaInscrito(ruta) &&
+      ruta.asientosDisponibles > 0 &&
+      ruta.estado === 'Activa'
+    );
+  }
+
+  limpiarFiltros(): void {
+    this.terminoBusqueda.set('');
+    this.turno.set('Todos');
+    this.soloDisponibles.set(false);
+    this.soloMisRutas.set(false);
   }
 
   onReservarAsiento(ruta: RutaCarpooling): void {
@@ -108,10 +126,11 @@ export class CarpoolingListComponent implements OnInit {
     });
   }
 
-  onEliminarRuta(id: number): void {
+  onEliminarRuta(id?: number): void {
+    if (id === undefined) return;
     this.carpoolingService.eliminar(id).subscribe({
       next: () => {
-        this.mostrarAlerta('Ruta eliminada correctamente del directorio.');
+        this.mostrarAlerta('Ruta eliminada correctamente.');
       }
     });
   }
