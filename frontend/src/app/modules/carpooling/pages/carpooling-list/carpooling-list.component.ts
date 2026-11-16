@@ -1,4 +1,4 @@
-import { CurrencyPipe, DatePipe, UpperCasePipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -9,7 +9,7 @@ import { CarpoolingService } from '../../services/carpooling.service';
 @Component({
   selector: 'app-carpooling-list',
   standalone: true,
-  imports: [RouterLink, FormsModule, CurrencyPipe, DatePipe, UpperCasePipe],
+  imports: [RouterLink, FormsModule, CurrencyPipe],
   templateUrl: './carpooling-list.component.html',
   styleUrl: './carpooling-list.component.css'
 })
@@ -17,133 +17,64 @@ export class CarpoolingListComponent implements OnInit {
   readonly carpoolingService = inject(CarpoolingService);
   readonly sesionService = inject(SesionService);
 
-  // Filtros reactivos con Signals
-  terminoBusqueda = signal<string>('');
-  turno = signal<string>('Todos');
-  soloDisponibles = signal<boolean>(false);
-  soloMisRutas = signal<boolean>(false);
+  // Filtro de búsqueda reactivo
+  busqueda = signal('');
+  alerta = signal<string | null>(null);
 
-  mensajeAlerta = signal<string | null>(null);
-
-  // Lista filtrada reactiva (computed)
+  // Lista filtrada con computed
   readonly rutasFiltradas = computed(() => {
-    const rutas = this.carpoolingService.rutas();
-    const termino = this.terminoBusqueda().trim().toLowerCase();
-    const turnoSeleccionado = this.turno();
-    const filtroDisponibles = this.soloDisponibles();
-    const filtroMisRutas = this.soloMisRutas();
-    const usuario = this.sesionService.usuarioActivo();
+    const texto = this.busqueda().trim().toLowerCase();
+    const lista = this.carpoolingService.rutas();
 
-    return rutas.filter((ruta) => {
-      if (termino) {
-        const coincide =
-          ruta.origen.toLowerCase().includes(termino) ||
-          ruta.destino.toLowerCase().includes(termino) ||
-          ruta.puntosIntermedios.toLowerCase().includes(termino) ||
-          ruta.autor.toLowerCase().includes(termino);
-        if (!coincide) return false;
-      }
+    if (!texto) return lista;
 
-      if (turnoSeleccionado !== 'Todos' && ruta.turno !== turnoSeleccionado) {
-        return false;
-      }
-
-      if (filtroDisponibles && ruta.asientosDisponibles <= 0) {
-        return false;
-      }
-
-      if (filtroMisRutas && ruta.autor !== usuario && !ruta.pasajeros.includes(usuario)) {
-        return false;
-      }
-
-      return true;
-    });
+    return lista.filter((r) =>
+      r.origen.toLowerCase().includes(texto) ||
+      r.destino.toLowerCase().includes(texto) ||
+      r.conductor.toLowerCase().includes(texto) ||
+      r.vehiculo.toLowerCase().includes(texto)
+    );
   });
 
-  // KPIs
-  readonly totalRutasActivas = computed(() =>
-    this.carpoolingService.rutas().filter((r) => r.estado === 'Activa').length
+  // Métricas rápidas (KPIs)
+  readonly totalRutas = computed(() => this.carpoolingService.rutas().length);
+  readonly totalCupos = computed(() =>
+    this.carpoolingService.rutas().reduce((total, r) => total + (r.cupos || 0), 0)
   );
-
-  readonly totalAsientosLibres = computed(() =>
-    this.carpoolingService
-      .rutas()
-      .filter((r) => r.estado === 'Activa')
-      .reduce((acc, r) => acc + r.asientosDisponibles, 0)
-  );
-
-  readonly misViajes = computed(() => {
-    const usuario = this.sesionService.usuarioActivo();
-    return this.carpoolingService
-      .rutas()
-      .filter((r) => r.autor === usuario || r.pasajeros.includes(usuario)).length;
-  });
 
   ngOnInit(): void {
-    this.carpoolingService.listar();
+    this.carpoolingService.cargar();
   }
 
-  // Helpers para la tarjeta (card)
-  esAutor(ruta: RutaCarpooling): boolean {
-    return ruta.autor === this.sesionService.usuarioActivo();
+  esConductor(ruta: RutaCarpooling): boolean {
+    return ruta.conductor === this.sesionService.usuarioActivo();
   }
 
-  yaEstaInscrito(ruta: RutaCarpooling): boolean {
-    return ruta.pasajeros.includes(this.sesionService.usuarioActivo());
-  }
-
-  puedeReservar(ruta: RutaCarpooling): boolean {
-    return (
-      !this.esAutor(ruta) &&
-      !this.yaEstaInscrito(ruta) &&
-      ruta.asientosDisponibles > 0 &&
-      ruta.estado === 'Activa'
-    );
-  }
-
-  limpiarFiltros(): void {
-    this.terminoBusqueda.set('');
-    this.turno.set('Todos');
-    this.soloDisponibles.set(false);
-    this.soloMisRutas.set(false);
-  }
-
-  onReservarAsiento(ruta: RutaCarpooling): void {
-    const pasajero = this.sesionService.usuarioActivo();
-    this.carpoolingService.reservarAsiento(ruta, pasajero).subscribe({
-      next: () => {
-        this.mostrarAlerta(`Asiento reservado en la ruta "${ruta.origen} → ${ruta.destino}".`);
-      }
-    });
-  }
-
-  onCancelarAsiento(ruta: RutaCarpooling): void {
-    const pasajero = this.sesionService.usuarioActivo();
-    this.carpoolingService.cancelarReservaAsiento(ruta, pasajero).subscribe({
-      next: () => {
-        this.mostrarAlerta(`Se canceló tu reserva en la ruta "${ruta.origen} → ${ruta.destino}".`);
-      }
-    });
-  }
-
-  onEliminarRuta(id?: number): void {
+  reservar(id?: number): void {
     if (id === undefined) return;
-    this.carpoolingService.eliminar(id).subscribe({
-      next: () => {
-        this.mostrarAlerta('Ruta eliminada correctamente.');
-      }
+    this.carpoolingService.reservar(id).subscribe({
+      next: () => this.mostrarAlerta('¡Asiento reservado con éxito! Se descontó 1 cupo.')
     });
+  }
+
+  eliminar(id?: number): void {
+    if (id === undefined) return;
+    if (confirm('¿Estás seguro de que deseas eliminar esta ruta?')) {
+      this.carpoolingService.eliminar(id).subscribe({
+        next: () => this.mostrarAlerta('Ruta eliminada correctamente.')
+      });
+    }
   }
 
   cerrarAlerta(): void {
-    this.mensajeAlerta.set(null);
+    this.alerta.set(null);
   }
 
-  private mostrarAlerta(texto: string): void {
-    this.mensajeAlerta.set(texto);
+  private mostrarAlerta(msg: string): void {
+    this.alerta.set(msg);
     setTimeout(() => {
-      if (this.mensajeAlerta() === texto) {
-        this.mensajeAlerta.set(null);
+      if (this.alerta() === msg) {
+        this.alerta.set(null);
       }
     }, 4000);
   }

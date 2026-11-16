@@ -166,84 +166,51 @@
   "rutas": [
     {
       "id": 1,
-      "origen": "Plaza de Armas de Piura",
+      "origen": "Plaza de Armas",
       "destino": "Campus UTP",
-      "puntosIntermedios": "Av. Grau, Óvalo Cáceres, Av. Vice",
-      "fechaSalida": "2026-11-12",
-      "horaSalida": "07:15",
-      "turno": "Mañana",
-      "vehiculo": "Toyota Corolla Cross - Blanco (Placa P1A-452)",
-      "asientosTotales": 4,
-      "asientosDisponibles": 2,
-      "aporteSugerido": 5,
-      "telefonoContacto": "987654321",
-      "estado": "Activa",
-      "autor": "Ana García (Ing. Sistemas)",
-      "pasajeros": [
-        "Carlos Rojas (Administración)",
-        "Elena Vargas (Derecho)"
-      ],
-      "observaciones": "Salida puntual. Espacio en maletera para mochilas o maquetas."
+      "fecha": "2026-11-20",
+      "hora": "07:15",
+      "vehiculo": "Toyota Corolla Blanco",
+      "cupos": 3,
+      "precio": 5,
+      "contacto": "987654321",
+      "conductor": "Ana García (Ing. Sistemas)"
     },
     {
       "id": 2,
       "origen": "Campus UTP",
-      "destino": "Real Plaza / Centro Comercial",
-      "puntosIntermedios": "Av. Vice, Av. Sánchez Cerro, Av. Gullman",
-      "fechaSalida": "2026-11-12",
-      "horaSalida": "15:30",
-      "turno": "Tarde",
-      "vehiculo": "Hyundai Tucson - Gris (Placa B4M-819)",
-      "asientosTotales": 3,
-      "asientosDisponibles": 0,
-      "aporteSugerido": 4.5,
-      "telefonoContacto": "965432198",
-      "estado": "Completa",
-      "autor": "Luis Mendoza (Arquitectura)",
-      "pasajeros": [
-        "Carlos Rojas (Administración)",
-        "Elena Vargas (Derecho)",
-        "Ana García (Ing. Sistemas)"
-      ],
-      "observaciones": "Cupo lleno. Punto de encuentro en puerta principal del campus."
+      "destino": "Real Plaza",
+      "fecha": "2026-11-20",
+      "hora": "15:30",
+      "vehiculo": "Hyundai Tucson Gris",
+      "cupos": 0,
+      "precio": 4.5,
+      "contacto": "965432198",
+      "conductor": "Luis Mendoza (Arquitectura)"
     },
     {
       "id": 3,
       "origen": "Campus UTP",
-      "destino": "Urbanización Miraflores - Castilla",
-      "puntosIntermedios": "Av. Cáceres, Puente Bolognesi, Av. Guardia Civil",
-      "fechaSalida": "2026-11-12",
-      "horaSalida": "21:15",
-      "turno": "Noche",
-      "vehiculo": "Kia Sportage - Negro (Placa C9T-304)",
-      "asientosTotales": 4,
-      "asientosDisponibles": 3,
-      "aporteSugerido": 6,
-      "telefonoContacto": "943218765",
-      "estado": "Activa",
-      "autor": "Mg. Anthony Távara (Docente)",
-      "pasajeros": [
-        "Luis Mendoza (Arquitectura)"
-      ],
-      "observaciones": "Salida 10 minutos después de finalizar el último bloque de clases."
+      "destino": "Miraflores - Castilla",
+      "fecha": "2026-11-20",
+      "hora": "21:15",
+      "vehiculo": "Kia Sportage Negro",
+      "cupos": 2,
+      "precio": 6,
+      "contacto": "943218765",
+      "conductor": "Mg. Anthony Távara (Docente)"
     },
     {
       "id": 4,
       "origen": "Óvalo Grau",
       "destino": "Campus UTP",
-      "puntosIntermedios": "Av. Loreto, Av. San Martín, Av. Vice",
-      "fechaSalida": "2026-11-13",
-      "horaSalida": "07:45",
-      "turno": "Mañana",
-      "vehiculo": "Suzuki Swift - Azul (Placa D2K-117)",
-      "asientosTotales": 4,
-      "asientosDisponibles": 4,
-      "aporteSugerido": 4,
-      "telefonoContacto": "912345678",
-      "estado": "Activa",
-      "autor": "Carlos Rojas (Administración)",
-      "pasajeros": [],
-      "observaciones": "Aire acondicionado activo. Confirmar por WhatsApp antes de abordar."
+      "fecha": "2026-11-21",
+      "hora": "07:45",
+      "vehiculo": "Suzuki Swift Azul",
+      "cupos": 4,
+      "precio": 4,
+      "contacto": "912345678",
+      "conductor": "Carlos Rojas (Administración)"
     }
   ]
 }
