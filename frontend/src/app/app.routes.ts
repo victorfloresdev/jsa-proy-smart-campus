@@ -9,7 +9,7 @@ import { CarpoolingListComponent } from './modules/carpooling/pages/carpooling-l
 import { CarpoolingFormComponent } from './modules/carpooling/pages/carpooling-form/carpooling-form.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'carpooling', pathMatch: 'full' },
+  { path: '', redirectTo: 'rutas', pathMatch: 'full' },
   { path: 'cafeteria', component: CafeteriaPanelComponent },
   { path: 'tickets', component: TicketListComponent },
   { path: 'objetos-perdidos', component: ObjetosTableroComponent },
@@ -19,5 +19,5 @@ export const routes: Routes = [
   { path: 'rutas', component: CarpoolingListComponent },
   { path: 'rutas/nuevo', component: CarpoolingFormComponent },
   { path: 'rutas/editar/:id', component: CarpoolingFormComponent },
-  { path: '**', redirectTo: 'carpooling' },
+  { path: '**', redirectTo: 'rutas' },
 ];
