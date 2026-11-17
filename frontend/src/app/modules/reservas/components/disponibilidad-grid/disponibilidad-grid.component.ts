@@ -1,6 +1,7 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Reserva, ESPACIOS_CAMPUS, BLOQUES_HORARIOS } from '../../models/reserva.model';
+import { SesionService } from '../../../../core/services/sesion.service';
 
 @Component({
   selector: 'app-disponibilidad-grid',
@@ -9,6 +10,8 @@ import { Reserva, ESPACIOS_CAMPUS, BLOQUES_HORARIOS } from '../../models/reserva
   templateUrl: './disponibilidad-grid.component.html'
 })
 export class DisponibilidadGridComponent {
+  readonly sesionService = inject(SesionService);
+
   @Input({ required: true }) reservas: Reserva[] = [];
   @Input({ required: true }) fechaSeleccionada: string = '';
   @Output() reservarBloque = new EventEmitter<{ espacio: string; tipoEspacio: string; bloque: string }>();
@@ -16,14 +19,23 @@ export class DisponibilidadGridComponent {
   readonly espacios = ESPACIOS_CAMPUS;
   readonly bloques = BLOQUES_HORARIOS;
 
+  // Busca si un espacio específico está ocupado en ese bloque y fecha
   obtenerReserva(espacio: string, bloque: string): Reserva | undefined {
     return this.reservas.find(
       (r) => r.espacio === espacio && r.bloqueHorario === bloque && r.fecha === this.fechaSeleccionada
     );
   }
 
+  // Verifica si el usuario activo YA TIENE alguna reserva a esa misma hora (en cualquier espacio)
+  usuarioTieneReservaEnBloque(bloque: string): boolean {
+    const usuario = this.sesionService.usuarioActivo();
+    return this.reservas.some(
+      (r) => r.autor === usuario && r.fecha === this.fechaSeleccionada && r.bloqueHorario === bloque
+    );
+  }
+
   onSeleccionar(espacio: string, tipoEspacio: string, bloque: string): void {
-    if (!this.obtenerReserva(espacio, bloque)) {
+    if (!this.obtenerReserva(espacio, bloque) && !this.usuarioTieneReservaEnBloque(bloque)) {
       this.reservarBloque.emit({ espacio, tipoEspacio, bloque });
     }
   }
