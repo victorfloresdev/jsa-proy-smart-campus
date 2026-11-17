@@ -21,6 +21,7 @@ export class ReservaFormComponent implements OnInit {
 
   readonly espacios = ESPACIOS_CAMPUS;
   readonly bloques = BLOQUES_HORARIOS;
+  readonly fechaMinima = new Date().toISOString().split('T')[0];
 
   reservaForm!: FormGroup;
   mensajeError: string | null = null;
@@ -32,7 +33,7 @@ export class ReservaFormComponent implements OnInit {
     this.reservaForm = this.fb.group({
       espacio: [query['espacio'] || '', [Validators.required]],
       tipoEspacio: [query['tipoEspacio'] || '', [Validators.required]],
-      fecha: [query['fecha'] || new Date().toISOString().split('T')[0], [Validators.required]],
+      fecha: [query['fecha'] || this.fechaMinima, [Validators.required]],
       bloqueHorario: [query['bloque'] || '', [Validators.required]],
       cantidadPersonas: [2, [Validators.required, Validators.min(2), Validators.max(10)]],
       motivo: ['', [Validators.required, Validators.minLength(5)]]
@@ -47,7 +48,7 @@ export class ReservaFormComponent implements OnInit {
     }
   }
 
-guardar(): void {
+  guardar(): void {
     if (this.reservaForm.invalid) {
       this.reservaForm.markAllAsTouched();
       return;
@@ -56,7 +57,11 @@ guardar(): void {
     const val = this.reservaForm.value;
     const usuarioActivo = this.sesionService.usuarioActivo();
 
-    // 1. Conflicto de espacio: el ambiente ya está ocupado a esa hora por alguien
+    if (val.fecha < this.fechaMinima) {
+      this.mensajeError = 'No puedes realizar reservas para fechas pasadas.';
+      return;
+    }
+
     const conflictoEspacio = this.reservaService.reservas().some(
       (r) => r.espacio === val.espacio && r.fecha === val.fecha && r.bloqueHorario === val.bloqueHorario
     );
@@ -66,7 +71,6 @@ guardar(): void {
       return;
     }
 
-    // 2. Nueva regla de negocio (Conflicto de usuario): El usuario ya tiene OTRA reserva a esa misma hora
     const conflictoUsuario = this.reservaService.reservas().some(
       (r) => r.autor === usuarioActivo && r.fecha === val.fecha && r.bloqueHorario === val.bloqueHorario
     );
@@ -96,3 +100,4 @@ guardar(): void {
       }
     });
   }
+}

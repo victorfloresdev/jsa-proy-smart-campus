@@ -23,6 +23,15 @@
   </div>
 </div>
 
+@if (esFechaPasada()) {
+  <div class="alert alert-warning d-flex align-items-center mb-3 shadow-sm">
+    <i class="bi bi-info-circle-fill fs-5 me-2"></i>
+    <div>
+      Estás consultando una fecha pasada (<strong>{{ fechaFiltro() | date:'dd/MM/yyyy':'UTC' }}</strong>). La agenda de reservas para este día se encuentra cerrada.
+    </div>
+  </div>
+}
+
 <div class="card shadow-sm mb-4">
   <div class="card-header bg-white py-3">
     <h5 class="card-title mb-0">Matriz de Disponibilidad ({{ fechaFiltro() | date:'dd/MM/yyyy':'UTC' }})</h5>

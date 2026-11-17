@@ -19,14 +19,19 @@ export class DisponibilidadGridComponent {
   readonly espacios = ESPACIOS_CAMPUS;
   readonly bloques = BLOQUES_HORARIOS;
 
-  // Busca si un espacio específico está ocupado en ese bloque y fecha
+
+  esFechaPasada(): boolean {
+    if (!this.fechaSeleccionada) return false;
+    const hoyStr = new Date().toISOString().split('T')[0];
+    return this.fechaSeleccionada < hoyStr;
+  }
+
   obtenerReserva(espacio: string, bloque: string): Reserva | undefined {
     return this.reservas.find(
       (r) => r.espacio === espacio && r.bloqueHorario === bloque && r.fecha === this.fechaSeleccionada
     );
   }
 
-  // Verifica si el usuario activo YA TIENE alguna reserva a esa misma hora (en cualquier espacio)
   usuarioTieneReservaEnBloque(bloque: string): boolean {
     const usuario = this.sesionService.usuarioActivo();
     return this.reservas.some(
@@ -35,7 +40,7 @@ export class DisponibilidadGridComponent {
   }
 
   onSeleccionar(espacio: string, tipoEspacio: string, bloque: string): void {
-    if (!this.obtenerReserva(espacio, bloque) && !this.usuarioTieneReservaEnBloque(bloque)) {
+    if (!this.esFechaPasada() && !this.obtenerReserva(espacio, bloque) && !this.usuarioTieneReservaEnBloque(bloque)) {
       this.reservarBloque.emit({ espacio, tipoEspacio, bloque });
     }
   }

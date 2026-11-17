@@ -24,6 +24,13 @@
                 <span class="badge bg-danger p-2" [title]="'Reservado por: ' + res.autor">
                   <i class="bi bi-x-circle me-1"></i> Ocupado
                 </span>
+              } @else if (esFechaPasada()) {
+                <button 
+                  class="btn btn-sm btn-outline-secondary" 
+                  disabled 
+                  title="No se pueden agendar reservas en fechas pasadas">
+                  <i class="bi bi-clock-history me-1"></i> No disponible
+                </button>
               } @else if (usuarioOcupado) {
                 <button 
                   class="btn btn-sm btn-outline-secondary" 
