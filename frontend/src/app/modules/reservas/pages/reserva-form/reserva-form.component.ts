@@ -47,19 +47,32 @@ export class ReservaFormComponent implements OnInit {
     }
   }
 
-  guardar(): void {
+guardar(): void {
     if (this.reservaForm.invalid) {
       this.reservaForm.markAllAsTouched();
       return;
     }
 
     const val = this.reservaForm.value;
-    const existeConflicto = this.reservaService.reservas().some(
+    const usuarioActivo = this.sesionService.usuarioActivo();
+
+    // 1. Conflicto de espacio: el ambiente ya está ocupado a esa hora por alguien
+    const conflictoEspacio = this.reservaService.reservas().some(
       (r) => r.espacio === val.espacio && r.fecha === val.fecha && r.bloqueHorario === val.bloqueHorario
     );
 
-    if (existeConflicto) {
+    if (conflictoEspacio) {
       this.mensajeError = 'El espacio seleccionado ya se encuentra reservado en esta fecha y horario.';
+      return;
+    }
+
+    // 2. Nueva regla de negocio (Conflicto de usuario): El usuario ya tiene OTRA reserva a esa misma hora
+    const conflictoUsuario = this.reservaService.reservas().some(
+      (r) => r.autor === usuarioActivo && r.fecha === val.fecha && r.bloqueHorario === val.bloqueHorario
+    );
+
+    if (conflictoUsuario) {
+      this.mensajeError = 'Ya tienes una reserva registrada en este mismo bloque horario. No puedes estar en dos lugares a la vez.';
       return;
     }
 
@@ -69,7 +82,7 @@ export class ReservaFormComponent implements OnInit {
     const nuevaReserva = {
       ...val,
       estado: 'Confirmada' as const,
-      autor: this.sesionService.usuarioActivo()
+      autor: usuarioActivo
     };
 
     this.reservaService.crear(nuevaReserva).subscribe({
@@ -83,4 +96,3 @@ export class ReservaFormComponent implements OnInit {
       }
     });
   }
-}
