@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SesionService } from '../../../../core/services/sesion.service';
 import { RutaCarpooling } from '../../models/ruta-carpooling.model';
@@ -23,21 +23,46 @@ export class CarpoolingFormComponent implements OnInit {
   id: number | null = null;
   enviado = false;
   conductorOriginal = '';
+  errorBackend = '';
 
-  private readonly fechaHoy = new Date().toISOString().split('T')[0];
+  readonly fechaHoy = this.obtenerFechaLocalHoy();
 
-  form: FormGroup = this.fb.group({
-    origen: ['', [Validators.required, Validators.minLength(3)]],
-    destino: ['Campus UTP', [Validators.required, Validators.minLength(3)]],
-    fecha: [this.fechaHoy, Validators.required],
-    hora: ['07:30', Validators.required],
-    vehiculo: ['', Validators.required],
-    cupos: [3, [Validators.required, Validators.min(0)]],
-    precio: [5.0, [Validators.required, Validators.min(0)]],
-    contacto: ['', [Validators.required, Validators.pattern(/^9\d{8}$/)]]
-  });
+  form: FormGroup = this.fb.group(
+    {
+      origen: ['', [Validators.required, Validators.minLength(3)]],
+      destino: ['Campus UTP', [Validators.required, Validators.minLength(3)]],
+      fecha: [this.fechaHoy, Validators.required],
+      hora: ['', [Validators.required, Validators.pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)]],
+      vehiculo: ['', Validators.required],
+      cupos: [3, [Validators.required, Validators.min(0)]],
+      precio: [5.0, [Validators.required, Validators.min(0)]],
+      contacto: ['', [Validators.required, Validators.pattern(/^9\d{8}$/)]]
+    },
+    { validators: this.validarFechaHoraFutura }
+  );
 
-  // Getter para acceso directo a controles del formulario (igual que en flota-app)
+  // Obtiene la fecha de hoy en formato YYYY-MM-DD usando la hora local (evita desfase UTC)
+  private obtenerFechaLocalHoy(): string {
+    const hoy = new Date();
+    const anio = hoy.getFullYear();
+    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+    const dia = String(hoy.getDate()).padStart(2, '0');
+    return `${anio}-${mes}-${dia}`;
+  }
+
+  // Valida que la fecha y hora combinadas no sean anteriores al momento actual
+  private validarFechaHoraFutura(group: AbstractControl): ValidationErrors | null {
+    const fecha = group.get('fecha')?.value;
+    const hora = group.get('hora')?.value;
+    if (!fecha || !hora) return null;
+
+    const fechaRuta = new Date(`${fecha}T${hora}:00`);
+    if (isNaN(fechaRuta.getTime())) return null;
+
+    return fechaRuta < new Date() ? { fechaPasada: true } : null;
+  }
+
+  // Getter para acceso directo a controles del formulario
   get f() {
     return this.form.controls;
   }
@@ -58,6 +83,7 @@ export class CarpoolingFormComponent implements OnInit {
 
   onSubmit(): void {
     this.enviado = true;
+    this.errorBackend = '';
 
     if (this.form.invalid) {
       return;
@@ -80,7 +106,10 @@ export class CarpoolingFormComponent implements OnInit {
       };
 
       this.carpoolingService.modificar(this.id, payload).subscribe({
-        next: () => this.router.navigate(['/rutas'])
+        next: () => this.router.navigate(['/rutas']),
+        error: (err) => {
+          this.errorBackend = err?.error?.mensaje || 'No se pudo actualizar la ruta.';
+        }
       });
     } else {
       const nuevaRuta: Omit<RutaCarpooling, 'id'> = {
@@ -96,7 +125,10 @@ export class CarpoolingFormComponent implements OnInit {
       };
 
       this.carpoolingService.agregar(nuevaRuta).subscribe({
-        next: () => this.router.navigate(['/rutas'])
+        next: () => this.router.navigate(['/rutas']),
+        error: (err) => {
+          this.errorBackend = err?.error?.mensaje || 'No se pudo publicar la ruta.';
+        }
       });
     }
   }

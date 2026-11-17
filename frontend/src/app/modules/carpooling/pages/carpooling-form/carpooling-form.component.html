@@ -18,6 +18,13 @@
       </div>
     </div>
 
+    @if (errorBackend) {
+      <div class="alert alert-danger d-flex align-items-center mb-4">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <div>{{ errorBackend }}</div>
+      </div>
+    }
+
     <div class="card border-0 shadow-sm">
       <div class="card-body p-4">
         <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
@@ -64,9 +71,10 @@
               <input
                 id="fecha"
                 type="date"
+                [min]="fechaHoy"
                 class="form-control"
                 formControlName="fecha"
-                [class.is-invalid]="f['fecha'].errors && (f['fecha'].touched || enviado)"
+                [class.is-invalid]="(f['fecha'].errors || form.errors?.['fechaPasada']) && (f['fecha'].touched || enviado)"
               />
               @if (f['fecha'].errors && (f['fecha'].touched || enviado)) {
                 <div class="invalid-feedback">La fecha es obligatoria.</div>
@@ -78,16 +86,24 @@
               <label for="hora" class="form-label fw-semibold">Hora de salida *</label>
               <input
                 id="hora"
-                type="text"
+                type="time"
                 class="form-control"
                 formControlName="hora"
-                placeholder="07:30"
-                [class.is-invalid]="f['hora'].errors && (f['hora'].touched || enviado)"
+                [class.is-invalid]="(f['hora'].errors || form.errors?.['fechaPasada']) && (f['hora'].touched || enviado)"
               />
               @if (f['hora'].errors && (f['hora'].touched || enviado)) {
-                <div class="invalid-feedback">La hora es obligatoria (ej: 07:30).</div>
+                <div class="invalid-feedback">Selecciona una hora válida (formato 24h HH:MM).</div>
               }
             </div>
+
+            @if (form.errors?.['fechaPasada'] && (f['fecha'].touched || f['hora'].touched || enviado)) {
+              <div class="col-12">
+                <div class="alert alert-danger py-2 small mb-0">
+                  <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                  La fecha y hora de salida deben ser posteriores al momento actual.
+                </div>
+              </div>
+            }
 
             <!-- Vehículo -->
             <div class="col-md-12">

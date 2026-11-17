@@ -174,7 +174,8 @@
       "cupos": 3,
       "precio": 5,
       "contacto": "987654321",
-      "conductor": "Ana García (Ing. Sistemas)"
+      "conductor": "Ana García (Ing. Sistemas)",
+      "pasajeros": []
     },
     {
       "id": 2,
@@ -183,10 +184,11 @@
       "fecha": "2026-11-20",
       "hora": "15:30",
       "vehiculo": "Hyundai Tucson Gris",
-      "cupos": 0,
+      "cupos": 2,
       "precio": 4.5,
       "contacto": "965432198",
-      "conductor": "Luis Mendoza (Arquitectura)"
+      "conductor": "Luis Mendoza (Arquitectura)",
+      "pasajeros": []
     },
     {
       "id": 3,
@@ -195,10 +197,11 @@
       "fecha": "2026-11-20",
       "hora": "21:15",
       "vehiculo": "Kia Sportage Negro",
-      "cupos": 2,
+      "cupos": 4,
       "precio": 6,
       "contacto": "943218765",
-      "conductor": "Mg. Anthony Távara (Docente)"
+      "conductor": "Mg. Anthony Távara (Docente)",
+      "pasajeros": []
     },
     {
       "id": 4,
@@ -207,10 +210,24 @@
       "fecha": "2026-11-21",
       "hora": "07:45",
       "vehiculo": "Suzuki Swift Azul",
-      "cupos": 4,
+      "cupos": 0,
       "precio": 4,
       "contacto": "912345678",
-      "conductor": "Carlos Rojas (Administración)"
+      "conductor": "Carlos Rojas (Administración)",
+      "pasajeros": []
+    },
+    {
+      "id": 5,
+      "origen": "Plaza del Sol",
+      "destino": "Campus UTP",
+      "fecha": "2026-11-12",
+      "hora": "07:30",
+      "vehiculo": "Vehiculo nuevo",
+      "cupos": 3,
+      "precio": 5,
+      "contacto": "999999999",
+      "conductor": "Mg. Anthony Távara (Docente)",
+      "pasajeros": []
     }
   ]
 }

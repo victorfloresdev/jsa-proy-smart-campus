@@ -8,11 +8,15 @@ export function validarRuta(datos: any): { valido: boolean; mensaje?: string } {
   if (!datos.destino || typeof datos.destino !== 'string' || datos.destino.trim().length < 3) {
     return { valido: false, mensaje: 'El destino es obligatorio y debe tener al menos 3 caracteres' };
   }
-  if (!datos.fecha) {
-    return { valido: false, mensaje: 'La fecha es obligatoria' };
+  if (!datos.fecha || !/^\d{4}-\d{2}-\d{2}$/.test(datos.fecha)) {
+    return { valido: false, mensaje: 'La fecha es obligatoria y debe tener formato YYYY-MM-DD' };
   }
-  if (!datos.hora) {
-    return { valido: false, mensaje: 'La hora es obligatoria' };
+  if (!datos.hora || !/^([01]\d|2[0-3]):([0-5]\d)$/.test(datos.hora)) {
+    return { valido: false, mensaje: 'La hora es obligatoria y debe tener formato HH:MM (00:00 a 23:59)' };
+  }
+  const fechaHoraRuta = new Date(`${datos.fecha}T${datos.hora}:00`);
+  if (isNaN(fechaHoraRuta.getTime()) || fechaHoraRuta < new Date()) {
+    return { valido: false, mensaje: 'La fecha y hora de salida deben ser posteriores al momento actual' };
   }
   if (!datos.vehiculo || typeof datos.vehiculo !== 'string' || datos.vehiculo.trim().length < 3) {
     return { valido: false, mensaje: 'El vehículo es obligatorio (mínimo 3 caracteres)' };
@@ -75,7 +79,8 @@ export const crearRuta = (req: Request, res: Response) => {
     cupos: Number(req.body.cupos),
     precio: Number(req.body.precio),
     contacto: req.body.contacto.trim(),
-    conductor: req.body.conductor.trim()
+    conductor: req.body.conductor.trim(),
+    pasajeros: []
   };
 
   db.rutas.push(nuevaRuta);
@@ -109,7 +114,8 @@ export const actualizarRuta = (req: Request, res: Response) => {
     cupos: Number(req.body.cupos),
     precio: Number(req.body.precio),
     contacto: req.body.contacto.trim(),
-    conductor: req.body.conductor.trim()
+    conductor: req.body.conductor.trim(),
+    pasajeros: db.rutas[index].pasajeros || []
   };
 
   db.rutas[index] = rutaActualizada;
@@ -130,12 +136,26 @@ export const parchearRuta = (req: Request, res: Response) => {
 
   const ruta = db.rutas[index];
 
-  // Si se solicita reservar, se descuenta 1 cupo
+  // Si se solicita reservar, se valida pasajero único y se descuenta 1 cupo
   if (req.body.reservar === true) {
+    const pasajero = typeof req.body.pasajero === 'string' ? req.body.pasajero.trim() : '';
+    if (!pasajero) {
+      return res.status(400).json({ mensaje: 'Debe indicar el nombre del pasajero para reservar' });
+    }
+    if (ruta.conductor === pasajero) {
+      return res.status(400).json({ mensaje: 'El conductor no puede reservar su propia ruta' });
+    }
+    if (!Array.isArray(ruta.pasajeros)) {
+      ruta.pasajeros = [];
+    }
+    if (ruta.pasajeros.includes(pasajero)) {
+      return res.status(400).json({ mensaje: 'Ya reservaste un asiento en esta ruta' });
+    }
     if (ruta.cupos <= 0) {
       return res.status(400).json({ mensaje: 'No hay cupos disponibles' });
     }
     ruta.cupos -= 1;
+    ruta.pasajeros.push(pasajero);
   } else if (req.body.cupos !== undefined) {
     const nuevosCupos = Number(req.body.cupos);
     if (isNaN(nuevosCupos) || nuevosCupos < 0) {
