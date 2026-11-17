@@ -80,7 +80,7 @@ export class CarpoolingFormComponent implements OnInit {
       };
 
       this.carpoolingService.modificar(this.id, payload).subscribe({
-        next: () => this.router.navigate(['/carpooling'])
+        next: () => this.router.navigate(['/rutas'])
       });
     } else {
       const nuevaRuta: Omit<RutaCarpooling, 'id'> = {

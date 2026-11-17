@@ -9,7 +9,7 @@ import { CarpoolingListComponent } from './modules/carpooling/pages/carpooling-l
 import { CarpoolingFormComponent } from './modules/carpooling/pages/carpooling-form/carpooling-form.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'carpooling', pathMatch: 'full' },
+  { path: '', redirectTo: 'rutas', pathMatch: 'full' },
   { path: 'cafeteria', component: CafeteriaPanelComponent },
   { path: 'tickets', component: TicketListComponent },
   { path: 'objetos-perdidos', component: ObjetosTableroComponent },
