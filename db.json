@@ -1,0 +1,37 @@
+{
+  "reservas": [
+    {
+      "id": 1,
+      "espacio": "Losa Deportiva 1",
+      "tipoEspacio": "Deportivo",
+      "fecha": "2026-11-14",
+      "bloqueHorario": "10:00 - 12:00",
+      "cantidadPersonas": 2,
+      "motivo": "Practica del equipo de basket de ingenieria",
+      "estado": "Confirmada",
+      "autor": "Ana García (Ing. Sistemas)"
+    },
+    {
+      "id": 2,
+      "espacio": "Laboratorio de Redes A-202",
+      "tipoEspacio": "Laboratorio",
+      "fecha": "2026-11-14",
+      "bloqueHorario": "14:00 - 16:00",
+      "cantidadPersonas": 2,
+      "motivo": "Practica 2 de la seccion 40471",
+      "estado": "Confirmada",
+      "autor": "Ana García (Ing. Sistemas)"
+    },
+    {
+      "id": 3,
+      "espacio": "Sala de Dibujo C-101",
+      "tipoEspacio": "Taller",
+      "fecha": "2026-11-14",
+      "bloqueHorario": "14:00 - 16:00",
+      "cantidadPersonas": 8,
+      "motivo": "Critica de maquetas de la seccion 42430",
+      "estado": "Confirmada",
+      "autor": "Luis Mendoza (Arquitectura)"
+    }
+  ]
+}
