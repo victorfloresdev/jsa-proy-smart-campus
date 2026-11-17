@@ -96,7 +96,7 @@ export class CarpoolingFormComponent implements OnInit {
       };
 
       this.carpoolingService.agregar(nuevaRuta).subscribe({
-        next: () => this.router.navigate(['/carpooling'])
+        next: () => this.router.navigate(['/rutas'])
       });
     }
   }

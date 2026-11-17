@@ -19,5 +19,5 @@ export const routes: Routes = [
   { path: 'rutas', component: CarpoolingListComponent },
   { path: 'rutas/nuevo', component: CarpoolingFormComponent },
   { path: 'rutas/editar/:id', component: CarpoolingFormComponent },
-  { path: '**', redirectTo: 'carpooling' },
+  { path: '**', redirectTo: 'rutas' },
 ];
