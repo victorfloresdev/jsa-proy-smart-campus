@@ -16,8 +16,8 @@ export const routes: Routes = [
   { path: 'objetos-perdidos/publicar', component: ObjetoFormComponent },
   { path: 'reservas', component: ReservasVistaComponent },
   { path: 'reservas/nueva', component: ReservaFormComponent },
-  { path: 'carpooling', component: CarpoolingListComponent },
-  { path: 'carpooling/nuevo', component: CarpoolingFormComponent },
-  { path: 'carpooling/editar/:id', component: CarpoolingFormComponent },
+  { path: 'rutas', component: CarpoolingListComponent },
+  { path: 'rutas/nuevo', component: CarpoolingFormComponent },
+  { path: 'rutas/editar/:id', component: CarpoolingFormComponent },
   { path: '**', redirectTo: 'carpooling' },
 ];
