@@ -34,8 +34,8 @@ export class CarpoolingService {
     );
   }
 
-  reservar(id: number): Observable<RutaCarpooling> {
-    return this.http.patch<RutaCarpooling>(`${this.apiUrl}/${id}`, { reservar: true }).pipe(
+  reservar(id: number, pasajero: string): Observable<RutaCarpooling> {
+    return this.http.patch<RutaCarpooling>(`${this.apiUrl}/${id}`, { reservar: true, pasajero }).pipe(
       tap(() => this.cargar())
     );
   }

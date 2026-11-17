@@ -9,4 +9,5 @@ export interface RutaCarpooling {
   precio: number;
   contacto: string;
   conductor: string;
+  pasajeros?: string[];
 }

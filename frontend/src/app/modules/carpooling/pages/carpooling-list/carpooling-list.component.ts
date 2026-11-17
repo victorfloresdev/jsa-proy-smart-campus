@@ -20,11 +20,21 @@ export class CarpoolingListComponent implements OnInit {
   // Filtro de búsqueda reactivo
   busqueda = signal('');
   alerta = signal<string | null>(null);
+  errorAlerta = signal<string | null>(null);
 
-  // Lista filtrada con computed
+  // Solo rutas con fecha y hora posterior al momento actual
+  readonly rutasVigentes = computed(() => {
+    const ahora = new Date();
+    return this.carpoolingService.rutas().filter((r) => {
+      const fechaRuta = new Date(`${r.fecha}T${r.hora}:00`);
+      return !isNaN(fechaRuta.getTime()) && fechaRuta >= ahora;
+    });
+  });
+
+  // Lista filtrada con computed (parte solo desde rutasVigentes)
   readonly rutasFiltradas = computed(() => {
     const texto = this.busqueda().trim().toLowerCase();
-    const lista = this.carpoolingService.rutas();
+    const lista = this.rutasVigentes();
 
     if (!texto) return lista;
 
@@ -36,10 +46,10 @@ export class CarpoolingListComponent implements OnInit {
     );
   });
 
-  // Métricas rápidas (KPIs)
-  readonly totalRutas = computed(() => this.carpoolingService.rutas().length);
+  // Métricas rápidas (KPIs solo de rutas vigentes)
+  readonly totalRutas = computed(() => this.rutasVigentes().length);
   readonly totalCupos = computed(() =>
-    this.carpoolingService.rutas().reduce((total, r) => total + (r.cupos || 0), 0)
+    this.rutasVigentes().reduce((total, r) => total + (r.cupos || 0), 0)
   );
 
   ngOnInit(): void {
@@ -50,10 +60,16 @@ export class CarpoolingListComponent implements OnInit {
     return ruta.conductor === this.sesionService.usuarioActivo();
   }
 
+  yaReservo(ruta: RutaCarpooling): boolean {
+    return (ruta.pasajeros || []).includes(this.sesionService.usuarioActivo());
+  }
+
   reservar(id?: number): void {
     if (id === undefined) return;
-    this.carpoolingService.reservar(id).subscribe({
-      next: () => this.mostrarAlerta('¡Asiento reservado con éxito! Se descontó 1 cupo.')
+    const pasajero = this.sesionService.usuarioActivo();
+    this.carpoolingService.reservar(id, pasajero).subscribe({
+      next: () => this.mostrarAlerta('¡Asiento reservado con éxito! Se descontó 1 cupo.'),
+      error: (err) => this.mostrarError(err?.error?.mensaje || 'No se pudo realizar la reserva.')
     });
   }
 
@@ -70,11 +86,26 @@ export class CarpoolingListComponent implements OnInit {
     this.alerta.set(null);
   }
 
+  cerrarError(): void {
+    this.errorAlerta.set(null);
+  }
+
   private mostrarAlerta(msg: string): void {
+    this.errorAlerta.set(null);
     this.alerta.set(msg);
     setTimeout(() => {
       if (this.alerta() === msg) {
         this.alerta.set(null);
+      }
+    }, 4000);
+  }
+
+  private mostrarError(msg: string): void {
+    this.alerta.set(null);
+    this.errorAlerta.set(msg);
+    setTimeout(() => {
+      if (this.errorAlerta() === msg) {
+        this.errorAlerta.set(null);
       }
     }, 4000);
   }

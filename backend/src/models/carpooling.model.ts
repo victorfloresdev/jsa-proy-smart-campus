@@ -12,6 +12,7 @@ export interface RutaCarpooling {
   precio: number;
   contacto: string;
   conductor: string;
+  pasajeros?: string[];
 }
 
 const DB_PATH = path.resolve(__dirname, '../data/db.json');
