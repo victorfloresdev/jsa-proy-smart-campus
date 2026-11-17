@@ -1,0 +1,91 @@
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+  <div>
+    <h2 class="fw-bold mb-1">
+      <i class="bi bi-search text-primary me-2"></i>Directorio de Objetos Perdidos
+    </h2>
+    <p class="text-muted mb-0">
+      Reporta artículos extraviados o encontrados dentro del campus universitario.
+      <span class="badge bg-primary-subtle text-primary ms-2">
+        {{ totalActivos() }} activos
+      </span>
+    </p>
+  </div>
+
+  <a routerLink="/objetos-perdidos/publicar" class="btn btn-primary">
+    <i class="bi bi-plus-circle me-1"></i>Publicar Objeto
+  </a>
+</div>
+
+<ul class="nav nav-pills mb-4 bg-white p-2 rounded shadow-sm">
+  <li class="nav-item">
+    <button
+      type="button"
+      class="nav-link"
+      [class.active]="pestanaActiva() === 'Todos'"
+      (click)="cambiarPestana('Todos')"
+    >
+      Todos ({{ objetosService.objetos().length }})
+    </button>
+  </li>
+  <li class="nav-item">
+    <button
+      type="button"
+      class="nav-link"
+      [class.active]="pestanaActiva() === 'Perdidos'"
+      (click)="cambiarPestana('Perdidos')"
+    >
+      <i class="bi bi-exclamation-circle me-1"></i>Perdidos
+    </button>
+  </li>
+  <li class="nav-item">
+    <button
+      type="button"
+      class="nav-link"
+      [class.active]="pestanaActiva() === 'Encontrados'"
+      (click)="cambiarPestana('Encontrados')"
+    >
+      <i class="bi bi-check-circle me-1"></i>Encontrados
+    </button>
+  </li>
+</ul>
+
+@if (objetosService.error()) {
+  <div class="alert alert-danger" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ objetosService.error() }}
+  </div>
+}
+
+@if (objetosService.cargando()) {
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="text-muted mt-2">Cargando objetos del campus...</p>
+  </div>
+} @else {
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    @for (item of objetosFiltrados(); track item.id) {
+      <div class="col">
+        <app-objeto-card
+          [objeto]="item"
+          [usuarioActivo]="sesionService.usuarioActivo()"
+          (marcarRecuperado)="onMarcarRecuperado($event)"
+          (eliminar)="onEliminar($event)"
+        />
+      </div>
+    } @empty {
+      <div class="col-12">
+        <div class="alert alert-light border text-center py-5">
+          <i class="bi bi-inbox fs-1 text-muted d-block mb-2"></i>
+          <h5 class="fw-semibold">No hay objetos registrados en esta categoría</h5>
+          <p class="text-muted mb-3">
+            Sé el primero en publicar un reporte para ayudar a la comunidad.
+          </p>
+          <a routerLink="/objetos-perdidos/publicar" class="btn btn-outline-primary btn-sm">
+            Publicar ahora
+          </a>
+        </div>
+      </div>
+    }
+  </div>
+}

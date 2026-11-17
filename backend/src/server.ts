@@ -1,19 +1,12 @@
-import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
-import cors from 'cors';
+import app from './app';
 
 dotenv.config();
 
-const app = express();
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
-app.use(cors());
-app.use(express.json());
-
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World!');
-});
-
-app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log('===============================================');
+  console.log(`Servidor Backend Smart Campus Escuchando en: http://localhost:${PORT}`);
+  console.log('===============================================');
 });

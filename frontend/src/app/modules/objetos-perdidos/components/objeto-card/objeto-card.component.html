@@ -1,0 +1,87 @@
+<div class="card h-100 shadow-sm border-0">
+  <div class="position-relative">
+    <img
+      [src]="objeto.imagenUrl || imagenPorDefecto"
+      [alt]="objeto.titulo"
+      (error)="onErrorImagen($event)"
+      class="card-img-top object-fit-cover"
+      style="height: 190px;"
+    />
+    <span
+      class="badge position-absolute top-0 start-0 m-2"
+      [class.bg-danger]="objeto.tipo === 'Perdido'"
+      [class.bg-primary]="objeto.tipo === 'Encontrado'"
+    >
+      {{ objeto.tipo }}
+    </span>
+    <span
+      class="badge position-absolute top-0 end-0 m-2"
+      [class.bg-success]="objeto.estado === 'Recuperado'"
+      [class.bg-warning]="objeto.estado === 'Activo'"
+      [class.text-dark]="objeto.estado === 'Activo'"
+    >
+      {{ objeto.estado }}
+    </span>
+  </div>
+
+  <div class="card-body d-flex flex-column">
+    <div class="mb-1">
+      <span class="badge bg-light text-secondary border">
+        <i class="bi bi-tag me-1"></i>{{ objeto.categoria }}
+      </span>
+    </div>
+
+    <h5 class="card-title fw-bold mb-2">
+      {{ objeto.titulo | titlecase }}
+    </h5>
+
+    <p class="card-text text-muted small mb-3">
+      {{ objeto.descripcion }}
+    </p>
+
+    <ul class="list-unstyled small text-secondary mt-auto mb-3">
+      <li class="mb-1">
+        <i class="bi bi-geo-alt-fill text-danger me-1"></i>
+        <strong>Ubicación:</strong> {{ objeto.ubicacion }}
+      </li>
+      <li class="mb-1">
+        <i class="bi bi-calendar-event text-primary me-1"></i>
+        <strong>Fecha:</strong> {{ objeto.fechaSuceso | date:'dd/MM/yyyy':'UTC' }}
+      </li>
+      <li class="mb-1">
+        <i class="bi bi-telephone-fill text-success me-1"></i>
+        <strong>Contacto:</strong> {{ objeto.contacto }}
+      </li>
+      <li>
+        <i class="bi bi-person-circle me-1"></i>
+        <strong>Publicado por:</strong> {{ objeto.autor }}
+      </li>
+    </ul>
+
+    @if (esPropietario) {
+      <div class="d-flex gap-2 pt-2 border-top">
+        @if (objeto.estado === 'Activo') {
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-success flex-grow-1"
+            (click)="onMarcarRecuperado()"
+          >
+            <i class="bi bi-check2-circle me-1"></i>Recuperado
+          </button>
+        }
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-danger"
+          [class.flex-grow-1]="objeto.estado === 'Recuperado'"
+          (click)="onEliminar()"
+          title="Eliminar publicación"
+        >
+          <i class="bi bi-trash"></i>
+          @if (objeto.estado === 'Recuperado') {
+            <span class="ms-1">Eliminar</span>
+          }
+        </button>
+      </div>
+    }
+  </div>
+</div>
