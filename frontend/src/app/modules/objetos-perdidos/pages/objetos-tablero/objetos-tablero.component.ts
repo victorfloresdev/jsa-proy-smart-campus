@@ -1,29 +1,50 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { SesionService } from '../../../../core/services/sesion.service';
+import { ObjetosService } from '../../services/objetos.service';
+import { FiltroTipoObjeto } from '../../models/objeto-perdido.model';
+import { ObjetoCardComponent } from '../../components/objeto-card/objeto-card.component';
 
 @Component({
   selector: 'app-objetos-tablero',
   standalone: true,
-  template: `
-    <div class="card shadow-sm border-0">
-      <div class="card-body p-4">
-        <div class="d-flex align-items-center gap-2 mb-2">
-          <i class="bi bi-search fs-3 text-primary"></i>
-          <h2 class="h4 mb-0">Módulo 3: Directorio de Objetos Perdidos</h2>
-        </div>
-        <p class="text-muted mb-3">
-          Módulo base listo para implementar en la rama <code>feat/objetos</code>.
-        </p>
-        <ul class="list-group list-group-flush small">
-          <li class="list-group-item px-0"><strong>Ruta:</strong> <code>/objetos-perdidos</code></li>
-          <li class="list-group-item px-0"><strong>Endpoint:</strong> <code>http://localhost:3000/objetos</code></li>
-          <li class="list-group-item px-0"><strong>Carpeta:</strong> <code>src/app/modules/objetos-perdidos/</code></li>
-          <li class="list-group-item px-0"><strong>Sesión activa:</strong> {{ sesionService.usuarioActivo() }}</li>
-        </ul>
-      </div>
-    </div>
-  `
+  imports: [RouterLink, ObjetoCardComponent],
+  templateUrl: './objetos-tablero.component.html',
 })
-export class ObjetosTableroComponent {
+export class ObjetosTableroComponent implements OnInit {
+  readonly objetosService = inject(ObjetosService);
   readonly sesionService = inject(SesionService);
+
+  readonly pestanaActiva = signal<FiltroTipoObjeto>('Todos');
+
+  readonly objetosFiltrados = computed(() => {
+    const lista = this.objetosService.objetos();
+    const filtro = this.pestanaActiva();
+
+    if (filtro === 'Todos') return lista;
+    const tipoBuscado = filtro === 'Perdidos' ? 'Perdido' : 'Encontrado';
+    return lista.filter((obj) => obj.tipo === tipoBuscado);
+  });
+
+  readonly totalActivos = computed(
+    () => this.objetosService.objetos().filter((o) => o.estado === 'Activo').length
+  );
+
+  ngOnInit(): void {
+    this.objetosService.listar();
+  }
+
+  cambiarPestana(pestana: FiltroTipoObjeto): void {
+    this.pestanaActiva.set(pestana);
+  }
+
+  onMarcarRecuperado(id: number): void {
+    this.objetosService.marcarRecuperado(id).subscribe();
+  }
+
+  onEliminar(id: number): void {
+    if (confirm('¿Seguro que deseas eliminar esta publicación?')) {
+      this.objetosService.eliminar(id).subscribe();
+    }
+  }
 }

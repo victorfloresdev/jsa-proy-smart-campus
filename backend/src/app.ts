@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import carpoolingRoutes from './routes/carpooling.routes';
-
+import objetoRoutes from './routes/objeto.routes';
 const app = express();
 
 // 1. Middlewares globales
@@ -14,7 +14,9 @@ app.get('/', (req: Request, res: Response) => {
   res.json({ message: 'API Smart Campus activa' });
 });
 
-// 3. Montaje de rutas de módulos
+
+// 3. Montaje de rutas modulares
+app.use('/objetos', objetoRoutes);
 app.use('/rutas', carpoolingRoutes);
 
 export default app;
