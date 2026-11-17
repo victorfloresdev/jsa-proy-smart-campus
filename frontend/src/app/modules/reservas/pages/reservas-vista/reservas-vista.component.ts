@@ -24,6 +24,11 @@ export class ReservasVistaComponent {
     return this.reservaService.reservas().filter((r) => r.fecha === fecha);
   });
 
+  esFechaPasada(): boolean {
+    const hoyStr = new Date().toISOString().split('T')[0];
+    return this.fechaFiltro() < hoyStr;
+  }
+
   onBloqueSeleccionado(evento: { espacio: string; tipoEspacio: string; bloque: string }): void {
     this.router.navigate(['/reservas/nueva'], {
       queryParams: {

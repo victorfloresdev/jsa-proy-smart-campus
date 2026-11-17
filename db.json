@@ -54,6 +54,28 @@
       "cantidadPersonas": 2,
       "estado": "Confirmada",
       "autor": "Luis Mendoza (Arquitectura)"
+    },
+    {
+      "id": 6,
+      "espacio": "Losa Deportiva 1",
+      "tipoEspacio": "Deportivo",
+      "fecha": "2026-11-17",
+      "bloqueHorario": "08:00 - 10:00",
+      "motivo": "asadaajsf",
+      "cantidadPersonas": 4,
+      "estado": "Confirmada",
+      "autor": "Elena Vargas (Derecho)"
+    },
+    {
+      "id": 7,
+      "espacio": "Losa Deportiva 1",
+      "tipoEspacio": "Deportivo",
+      "fecha": "2026-11-17",
+      "bloqueHorario": "16:00 - 18:00",
+      "motivo": "q3425fsd",
+      "cantidadPersonas": 4,
+      "estado": "Confirmada",
+      "autor": "Luis Mendoza (Arquitectura)"
     }
   ]
 }
