@@ -1,0 +1,43 @@
+<div class="table-responsive">
+  <table class="table table-bordered align-middle text-center">
+    <thead class="table-light">
+      <tr>
+        <th>Espacio / Ambiente</th>
+        @for (bloque of bloques; track bloque) {
+          <th>{{ bloque }}</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (item of espacios; track item.nombre) {
+        <tr>
+          <td class="fw-bold text-start">
+            {{ item.nombre }}
+            <br>
+            <small class="text-muted font-monospace">{{ item.tipo }}</small>
+          </td>
+          @for (bloque of bloques; track bloque) {
+            @let res = obtenerReserva(item.nombre, bloque);
+            <td>
+              @if (res) {
+                <span class="badge bg-danger p-2" [title]="'Reservado por: ' + res.autor">
+                  <i class="bi bi-x-circle me-1"></i> Ocupado
+                </span>
+              } @else {
+                <button 
+                  class="btn btn-sm btn-outline-success" 
+                  (click)="onSeleccionar(item.nombre, item.tipo, bloque)">
+                  <i class="bi bi-plus-circle me-1"></i> Disponible
+                </button>
+              }
+            </td>
+          }
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="6" class="text-center text-muted">No se encontraron espacios configurados.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
