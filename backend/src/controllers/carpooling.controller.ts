@@ -36,15 +36,15 @@ export function validarRuta(datos: any): { valido: boolean; mensaje?: string } {
 
 // 1. GET /rutas
 export const listarRutas = (req: Request, res: Response) => {
-  const db = getDb();
-  res.status(200).json(db.rutas || []);
+  const rutas = getDb().rutas || [];
+  res.status(200).json(rutas);
 };
 
 // 2. GET /rutas/:id
 export const obtenerRutaPorId = (req: Request, res: Response) => {
   const id = Number(req.params.id);
-  const db = getDb();
-  const ruta = (db.rutas || []).find((r: RutaCarpooling) => r.id === id);
+  const rutas = getDb().rutas || [];
+  const ruta = (rutas).find((r: RutaCarpooling) => r.id === id);
 
   if (!ruta) {
     return res.status(404).json({ mensaje: 'Ruta no encontrada' });
@@ -109,7 +109,7 @@ export const actualizarRuta = (req: Request, res: Response) => {
     cupos: Number(req.body.cupos),
     precio: Number(req.body.precio),
     contacto: req.body.contacto.trim(),
-    conductor: req.body.conductor || db.rutas[index].conductor
+    conductor: req.body.conductor.trim()
   };
 
   db.rutas[index] = rutaActualizada;

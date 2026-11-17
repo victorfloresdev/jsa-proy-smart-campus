@@ -16,6 +16,5 @@ app.get('/', (req: Request, res: Response) => {
 
 // 3. Montaje de rutas de módulos
 app.use('/rutas', carpoolingRoutes);
-app.use('/carpooling', carpoolingRoutes); // Alias por compatibilidad
 
 export default app;
