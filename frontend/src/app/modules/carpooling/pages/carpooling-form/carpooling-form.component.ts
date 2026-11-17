@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SesionService } from '../../../../core/services/sesion.service';
-import { EstadoRuta, RutaCarpooling } from '../../models/ruta-carpooling.model';
+import { RutaCarpooling } from '../../models/ruta-carpooling.model';
 import { CarpoolingService } from '../../services/carpooling.service';
 
 @Component({
@@ -20,117 +20,84 @@ export class CarpoolingFormComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
 
   esEdicion = false;
-  rutaId: number | null = null;
+  id: number | null = null;
   enviado = false;
-  guardando = false;
-  errorCarga: string | null = null;
+  conductorOriginal = '';
 
-  private autorOriginal = '';
-  private pasajerosActuales: string[] = [];
-
-  private readonly fechaHoyISO = new Date().toISOString().split('T')[0];
+  private readonly fechaHoy = new Date().toISOString().split('T')[0];
 
   form: FormGroup = this.fb.group({
-    origen: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(80)]],
-    destino: ['Campus UTP', [Validators.required, Validators.minLength(3), Validators.maxLength(80)]],
-    puntosIntermedios: ['', [Validators.required, Validators.minLength(5)]],
-    fechaSalida: [this.fechaHoyISO, [Validators.required]],
-    horaSalida: ['07:30', [Validators.required, Validators.pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)]],
-    turno: ['Mañana', [Validators.required]],
-    vehiculo: ['', [Validators.required, Validators.minLength(5)]],
-    asientosTotales: [4, [Validators.required, Validators.min(1), Validators.max(6)]],
-    asientosDisponibles: [4, [Validators.required, Validators.min(1), Validators.max(6)]],
-    aporteSugerido: [5.0, [Validators.required, Validators.min(0), Validators.max(50)]],
-    telefonoContacto: ['', [Validators.required, Validators.pattern(/^9\d{8}$/)]],
-    observaciones: ['', [Validators.maxLength(250)]]
+    origen: ['', [Validators.required, Validators.minLength(3)]],
+    destino: ['Campus UTP', [Validators.required, Validators.minLength(3)]],
+    fecha: [this.fechaHoy, Validators.required],
+    hora: ['07:30', Validators.required],
+    vehiculo: ['', Validators.required],
+    cupos: [3, [Validators.required, Validators.min(0)]],
+    precio: [5.0, [Validators.required, Validators.min(0)]],
+    contacto: ['', [Validators.required, Validators.pattern(/^9\d{8}$/)]]
   });
+
+  // Getter para acceso directo a controles del formulario (igual que en flota-app)
+  get f() {
+    return this.form.controls;
+  }
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       this.esEdicion = true;
-      this.rutaId = Number(idParam);
-      this.form
-        .get('asientosDisponibles')
-        ?.setValidators([Validators.required, Validators.min(0), Validators.max(6)]);
-      this.form.get('asientosDisponibles')?.updateValueAndValidity();
-
-      this.carpoolingService.obtenerPorId(this.rutaId).subscribe({
+      this.id = Number(idParam);
+      this.carpoolingService.obtener(this.id).subscribe({
         next: (ruta) => {
-          this.autorOriginal = ruta.autor;
-          this.pasajerosActuales = ruta.pasajeros ?? [];
+          this.conductorOriginal = ruta.conductor;
           this.form.patchValue(ruta);
-        },
-        error: () => {
-          this.errorCarga = 'No se encontró la ruta solicitada para editar.';
         }
       });
     }
-  }
-
-  esInvalido(campo: string): boolean {
-    const control = this.form.get(campo);
-    return !!(control && control.invalid && (control.touched || this.enviado));
   }
 
   onSubmit(): void {
     this.enviado = true;
 
     if (this.form.invalid) {
-      this.form.markAllAsTouched();
       return;
     }
 
-    this.guardando = true;
     const valores = this.form.value;
 
-    if (this.esEdicion && this.rutaId !== null) {
-      const estado: EstadoRuta =
-        Number(valores.asientosDisponibles) === 0 ? 'Completa' : 'Activa';
-
+    if (this.esEdicion && this.id !== null) {
       const payload: RutaCarpooling = {
-        ...valores,
-        id: this.rutaId,
-        asientosTotales: Number(valores.asientosTotales),
-        asientosDisponibles: Number(valores.asientosDisponibles),
-        aporteSugerido: Number(valores.aporteSugerido),
-        autor: this.autorOriginal,
-        pasajeros: this.pasajerosActuales,
-        estado
+        id: this.id,
+        origen: valores.origen.trim(),
+        destino: valores.destino.trim(),
+        fecha: valores.fecha,
+        hora: valores.hora,
+        vehiculo: valores.vehiculo.trim(),
+        cupos: Number(valores.cupos),
+        precio: Number(valores.precio),
+        contacto: valores.contacto.trim(),
+        conductor: this.conductorOriginal || this.sesionService.usuarioActivo()
       };
 
-      this.carpoolingService.actualizar(this.rutaId, payload).subscribe({
-        next: () => {
-          this.guardando = false;
-          this.router.navigate(['/carpooling']);
-        },
-        error: () => {
-          this.guardando = false;
-          this.errorCarga = 'No se pudo actualizar la ruta.';
-        }
+      this.carpoolingService.modificar(this.id, payload).subscribe({
+        next: () => this.router.navigate(['/carpooling'])
       });
-      return;
+    } else {
+      const nuevaRuta: Omit<RutaCarpooling, 'id'> = {
+        origen: valores.origen.trim(),
+        destino: valores.destino.trim(),
+        fecha: valores.fecha,
+        hora: valores.hora,
+        vehiculo: valores.vehiculo.trim(),
+        cupos: Number(valores.cupos),
+        precio: Number(valores.precio),
+        contacto: valores.contacto.trim(),
+        conductor: this.sesionService.usuarioActivo()
+      };
+
+      this.carpoolingService.agregar(nuevaRuta).subscribe({
+        next: () => this.router.navigate(['/carpooling'])
+      });
     }
-
-    const nuevaRuta: Omit<RutaCarpooling, 'id'> = {
-      ...valores,
-      asientosTotales: Number(valores.asientosTotales),
-      asientosDisponibles: Number(valores.asientosDisponibles),
-      aporteSugerido: Number(valores.aporteSugerido),
-      autor: this.sesionService.usuarioActivo(),
-      pasajeros: [],
-      estado: 'Activa'
-    };
-
-    this.carpoolingService.crear(nuevaRuta).subscribe({
-      next: () => {
-        this.guardando = false;
-        this.router.navigate(['/carpooling']);
-      },
-      error: () => {
-        this.guardando = false;
-        this.errorCarga = 'No se pudo registrar la ruta. Verifica que el servidor backend esté activo.';
-      }
-    });
   }
 }
