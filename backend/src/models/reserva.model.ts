@@ -13,7 +13,7 @@ export interface Reserva {
   autor: string;
 }
 
-const DB_PATH = path.resolve(__dirname, '../../../db.json');
+const DB_PATH = path.resolve(__dirname, '../data/db.json');
 
 export const getDb = () => JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'));
 export const saveDb = (data: any) =>

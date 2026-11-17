@@ -19,7 +19,8 @@ export const ESPACIOS_CAMPUS: EspacioCampus[] = [
   { nombre: 'Cubículo de Estudio B-104', tipo: 'Sala de Estudio' },
   { nombre: 'Laboratorio de Redes A-202', tipo: 'Laboratorio' },
   { nombre: 'Sala de Dibujo C-101', tipo: 'Taller' },
-  { nombre: 'Losa Deportiva 1', tipo: 'Deportivo' }
+  { nombre: 'Losa Deportiva 1', tipo: 'Deportivo' },
+  {nombre: 'Cancha B', tipo: 'Deportivo'}
 ];
 
 export const BLOQUES_HORARIOS: string[] = [

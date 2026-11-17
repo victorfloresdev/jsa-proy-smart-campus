@@ -76,6 +76,17 @@
       "cantidadPersonas": 4,
       "estado": "Confirmada",
       "autor": "Luis Mendoza (Arquitectura)"
+    },
+    {
+      "id": 8,
+      "espacio": "Auditorio Principal",
+      "tipoEspacio": "Conferencia",
+      "fecha": "2026-11-18",
+      "bloqueHorario": "08:00 - 10:00",
+      "motivo": "kjgdluf",
+      "cantidadPersonas": 2,
+      "estado": "Confirmada",
+      "autor": "Luis Mendoza (Arquitectura)"
     }
   ]
 }
