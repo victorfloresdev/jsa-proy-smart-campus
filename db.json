@@ -32,6 +32,28 @@
       "motivo": "Critica de maquetas de la seccion 42430",
       "estado": "Confirmada",
       "autor": "Luis Mendoza (Arquitectura)"
+    },
+    {
+      "id": 4,
+      "espacio": "Cubículo de Estudio B-104",
+      "tipoEspacio": "Sala de Estudio",
+      "fecha": "2026-11-17",
+      "bloqueHorario": "10:00 - 12:00",
+      "motivo": "aaaaaaa",
+      "cantidadPersonas": 2,
+      "estado": "Confirmada",
+      "autor": "Ana García (Ing. Sistemas)"
+    },
+    {
+      "id": 5,
+      "espacio": "Sala de Dibujo C-101",
+      "tipoEspacio": "Taller",
+      "fecha": "2026-11-17",
+      "bloqueHorario": "10:00 - 12:00",
+      "motivo": "ASADASDADDDS",
+      "cantidadPersonas": 2,
+      "estado": "Confirmada",
+      "autor": "Luis Mendoza (Arquitectura)"
     }
   ]
 }
