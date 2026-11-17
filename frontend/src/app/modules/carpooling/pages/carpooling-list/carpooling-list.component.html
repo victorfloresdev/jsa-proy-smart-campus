@@ -10,7 +10,7 @@
       </p>
     </div>
 
-    <a routerLink="/carpooling/nuevo" class="btn btn-primary">
+    <a routerLink="/rutas/nuevo" class="btn btn-primary">
       <i class="bi bi-plus-circle me-1"></i>Publicar Nueva Ruta
     </a>
   </div>
@@ -145,7 +145,7 @@
             @if (esConductor(ruta)) {
               <!-- Opciones del conductor: Editar o Eliminar -->
               <div class="d-flex gap-2">
-                <a [routerLink]="['/carpooling/editar', ruta.id]" class="btn btn-outline-primary btn-sm flex-grow-1">
+                <a [routerLink]="['/rutas/editar', ruta.id]" class="btn btn-outline-primary btn-sm flex-grow-1">
                   <i class="bi bi-pencil-square me-1"></i>Editar
                 </a>
                 <button type="button" class="btn btn-outline-danger btn-sm flex-grow-1" (click)="eliminar(ruta.id)">
@@ -174,7 +174,7 @@
             <i class="bi bi-geo-alt fs-1 text-muted d-block mb-2"></i>
             <h2 class="h5 fw-semibold">No se encontraron rutas</h2>
             <p class="text-muted small mb-3">No hay viajes registrados que coincidan con la búsqueda.</p>
-            <a routerLink="/carpooling/nuevo" class="btn btn-outline-primary btn-sm">
+            <a routerLink="/rutas/nuevo" class="btn btn-outline-primary btn-sm">
               <i class="bi bi-plus-circle me-1"></i>Publicar una nueva ruta
             </a>
           </div>
