@@ -1,0 +1,103 @@
+<div class="formulario-container">
+  <header class="encabezado">
+    <div>
+      <h1>🛒 Registrar nuevo pedido</h1>
+      <p>Selecciona un plato y la cantidad que deseas pedir.</p>
+    </div>
+
+    <button type="button" class="btn-volver" (click)="volver()">
+      ← Volver a Cafetería
+    </button>
+  </header>
+
+  <form [formGroup]="form" (ngSubmit)="guardarPedido()">
+
+    <!-- Selección del plato -->
+    <div class="campo">
+      <label for="plato">Plato del menú</label>
+
+      <select id="plato" formControlName="plato">
+        <option value="">Selecciona un plato</option>
+
+        @for (plato of cafeteria.menuDelDia; track plato.plato) {
+          <option [value]="plato.plato">
+            {{ plato.plato }} -
+            {{ plato.precio | currency:'PEN':'S/ ':'1.2-2' }}
+          </option>
+        }
+      </select>
+
+      @if (form.controls['plato'].touched && form.controls['plato'].invalid) {
+        <small class="error">
+          Debes seleccionar un plato.
+        </small>
+      }
+    </div>
+
+    <!-- Detalles del plato seleccionado -->
+    @if (platoSeleccionado) {
+      <div class="detalle-plato">
+        <span>{{ platoSeleccionado.categoria }}</span>
+
+        <h2>{{ platoSeleccionado.plato }}</h2>
+
+        <p>
+          Precio unitario:
+          <strong>
+            {{ platoSeleccionado.precio | currency:'PEN':'S/ ':'1.2-2' }}
+          </strong>
+        </p>
+      </div>
+    }
+
+    <!-- Cantidad -->
+    <div class="campo">
+      <label for="cantidad">Cantidad (máximo 5)</label>
+
+      <input
+        id="cantidad"
+        type="number"
+        formControlName="cantidad"
+        min="1"
+        max="5"
+      />
+
+      @if (form.controls['cantidad'].touched && form.controls['cantidad'].invalid) {
+        <small class="error">
+          La cantidad debe estar entre 1 y 5.
+        </small>
+      }
+    </div>
+
+    <!-- Observaciones opcionales -->
+    <div class="campo">
+      <label for="observaciones">Observaciones (opcional)</label>
+
+      <textarea
+        id="observaciones"
+        formControlName="observaciones"
+        rows="3"
+        placeholder="Ej. Sin cebolla, poca sal..."
+      ></textarea>
+    </div>
+
+    <!-- Total -->
+    <div class="resumen">
+      <span>Total del pedido</span>
+
+      <strong>
+        {{ total | currency:'PEN':'S/ ':'1.2-2' }}
+      </strong>
+    </div>
+
+    <!-- Botón para guardar -->
+    <button
+      type="submit"
+      class="btn-guardar"
+      [disabled]="guardando || form.invalid || !platoSeleccionado"
+    >
+      {{ guardando ? 'Registrando...' : 'Registrar pedido' }}
+    </button>
+
+  </form>
+</div>

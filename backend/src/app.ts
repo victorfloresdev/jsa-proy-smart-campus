@@ -4,6 +4,7 @@ import carpoolingRoutes from './routes/carpooling.routes';
 import objetoRoutes from './routes/objeto.routes';
 import reservaRoutes from './routes/reserva.routes';
 import ticketRoutes from './routes/ticket.routes';
+import pedidoRoutes from './routes/pedido.routes';
 const app = express();
 
 // 1. Middlewares globales
@@ -22,5 +23,6 @@ app.use('/objetos', objetoRoutes);
 app.use('/rutas', carpoolingRoutes);
 app.use('/reservas', reservaRoutes);
 app.use('/tickets', ticketRoutes);
+app.use('/pedidos', pedidoRoutes);
 
 export default app;

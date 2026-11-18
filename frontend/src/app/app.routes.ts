@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { CafeteriaPanelComponent } from './modules/cafeteria/pages/cafeteria-panel/cafeteria-panel.component';
+import { PedidoFormComponent } from './modules/cafeteria/pages/pedido-form/pedido-form.component';
 import { TicketListComponent } from './modules/tickets/pages/ticket-list/ticket-list.component';
 import { TicketFormComponent } from './modules/tickets/pages/ticket-form/ticket-form.component';
 import { ObjetosTableroComponent } from './modules/objetos-perdidos/pages/objetos-tablero/objetos-tablero.component';
@@ -12,6 +13,7 @@ import { CarpoolingFormComponent } from './modules/carpooling/pages/carpooling-f
 export const routes: Routes = [
   { path: '', redirectTo: 'rutas', pathMatch: 'full' },
   { path: 'cafeteria', component: CafeteriaPanelComponent },
+  { path: 'cafeteria/nuevo-pedido', component: PedidoFormComponent },
   { path: 'tickets', component: TicketListComponent },
   { path: 'tickets/nuevo', component: TicketFormComponent },
   { path: 'objetos-perdidos', component: ObjetosTableroComponent },

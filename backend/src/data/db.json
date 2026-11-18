@@ -39,6 +39,17 @@
       "fecha": "2026-11-11T09:45:00.000Z",
       "estado": "En preparación",
       "autor": "Mg. Anthony Távara (Docente)"
+    },
+    {
+      "id": 4,
+      "plato": "Lomo Saltado Ejecutivo",
+      "categoria": "Almuerzos",
+      "precio": 14.5,
+      "cantidad": 2,
+      "total": 29,
+      "fecha": "2026-11-18T16:58:26.299Z",
+      "estado": "En preparación",
+      "autor": "Ana García (Ing. Sistemas)"
     }
   ],
   "tickets": [
