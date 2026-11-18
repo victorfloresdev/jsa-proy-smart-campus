@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getDb, saveDb, RutaCarpooling } from '../models/carpooling.model';
+import { getDb, saveDb, Parada, RutaCarpooling } from '../models/carpooling.model';
 
 export function validarRuta(datos: any): { valido: boolean; mensaje?: string } {
   if (!datos.origen || typeof datos.origen !== 'string' || datos.origen.trim().length < 3) {
@@ -35,6 +35,17 @@ export function validarRuta(datos: any): { valido: boolean; mensaje?: string } {
   if (!datos.conductor) {
     return { valido: false, mensaje: 'El conductor es obligatorio' };
   }
+  if (datos.paradas !== undefined && !Array.isArray(datos.paradas)) {
+    return { valido: false, mensaje: 'Las paradas deben ser una lista' };
+  }
+  for (const p of datos.paradas || []) {
+    if (!p.lugar || typeof p.lugar !== 'string' || p.lugar.trim().length < 2) {
+      return { valido: false, mensaje: 'Cada parada debe tener un lugar válido (mínimo 2 caracteres)' };
+    }
+    if (!p.horaAprox || !/^([01]\d|2[0-3]):([0-5]\d)$/.test(p.horaAprox)) {
+      return { valido: false, mensaje: 'Cada parada debe tener una hora aproximada válida (HH:MM)' };
+    }
+  }
   return { valido: true };
 }
 
@@ -69,6 +80,13 @@ export const crearRuta = (req: Request, res: Response) => {
 
   const nuevoId = db.rutas.length > 0 ? Math.max(...db.rutas.map((r: RutaCarpooling) => r.id || 0)) + 1 : 1;
 
+  const paradasLimpias: Parada[] = Array.isArray(req.body.paradas)
+    ? req.body.paradas.map((p: any) => ({
+        lugar: p.lugar.trim(),
+        horaAprox: p.horaAprox
+      }))
+    : [];
+
   const nuevaRuta: RutaCarpooling = {
     id: nuevoId,
     origen: req.body.origen.trim(),
@@ -80,7 +98,8 @@ export const crearRuta = (req: Request, res: Response) => {
     precio: Number(req.body.precio),
     contacto: req.body.contacto.trim(),
     conductor: req.body.conductor.trim(),
-    pasajeros: []
+    pasajeros: [],
+    paradas: paradasLimpias
   };
 
   db.rutas.push(nuevaRuta);
@@ -104,6 +123,13 @@ export const actualizarRuta = (req: Request, res: Response) => {
     return res.status(404).json({ mensaje: 'Ruta no encontrada' });
   }
 
+  const paradasLimpias: Parada[] = Array.isArray(req.body.paradas)
+    ? req.body.paradas.map((p: any) => ({
+        lugar: p.lugar.trim(),
+        horaAprox: p.horaAprox
+      }))
+    : [];
+
   const rutaActualizada: RutaCarpooling = {
     id,
     origen: req.body.origen.trim(),
@@ -115,7 +141,8 @@ export const actualizarRuta = (req: Request, res: Response) => {
     precio: Number(req.body.precio),
     contacto: req.body.contacto.trim(),
     conductor: req.body.conductor.trim(),
-    pasajeros: db.rutas[index].pasajeros || []
+    pasajeros: db.rutas[index].pasajeros || [],
+    paradas: paradasLimpias
   };
 
   db.rutas[index] = rutaActualizada;

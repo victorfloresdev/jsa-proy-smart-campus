@@ -42,7 +42,8 @@ export class CarpoolingListComponent implements OnInit {
       r.origen.toLowerCase().includes(texto) ||
       r.destino.toLowerCase().includes(texto) ||
       r.conductor.toLowerCase().includes(texto) ||
-      r.vehiculo.toLowerCase().includes(texto)
+      r.vehiculo.toLowerCase().includes(texto) ||
+      (r.paradas || []).some((p) => p.lugar.toLowerCase().includes(texto))
     );
   });
 

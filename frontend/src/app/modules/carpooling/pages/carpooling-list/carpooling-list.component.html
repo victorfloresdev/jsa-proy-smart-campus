@@ -68,7 +68,7 @@
             <input
               type="text"
               class="form-control"
-              placeholder="Buscar por origen, destino, conductor o vehículo..."
+              placeholder="Buscar por origen, destino, parada, conductor o vehículo..."
               [ngModel]="busqueda()"
               (ngModelChange)="busqueda.set($event)"
             />
@@ -142,6 +142,23 @@
                   {{ ruta.cupos }}
                 </span>
               </div>
+            </div>
+
+            <!-- Paradas intermedias (Maestro-Detalle) -->
+            <div class="mt-1">
+              <div class="small fw-semibold text-secondary mb-1">
+                <i class="bi bi-signpost-2 me-1 text-primary"></i>Paradas intermedias:
+              </div>
+              <ul class="list-unstyled small mb-0 ps-2">
+                @for (parada of ruta.paradas; track $index) {
+                  <li class="text-muted">
+                    <i class="bi bi-dot text-primary"></i>
+                    <strong>{{ parada.horaAprox }}</strong> &mdash; {{ parada.lugar }}
+                  </li>
+                } @empty {
+                  <li class="text-muted fst-italic">Viaje directo (sin paradas)</li>
+                }
+              </ul>
             </div>
           </div>
 
