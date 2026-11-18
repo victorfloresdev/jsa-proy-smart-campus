@@ -1,0 +1,9 @@
+.plato-card {
+  border: none;
+  border-radius: 12px;
+  transition: transform 0.2s ease;
+}
+
+.plato-card:hover {
+  transform: translateY(-4px);
+}

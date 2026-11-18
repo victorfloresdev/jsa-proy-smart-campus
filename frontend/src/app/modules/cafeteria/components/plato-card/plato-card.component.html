@@ -1,0 +1,32 @@
+<div class="card plato-card h-100 shadow-sm">
+
+  <div class="card-body">
+
+    <span class="badge bg-light text-dark mb-2">
+      {{ plato.categoria | uppercase }}
+    </span>
+
+    <h5 class="card-title">
+      {{ plato.plato }}
+    </h5>
+
+    <div class="d-flex justify-content-between align-items-center mt-3">
+
+      <strong class="text-primary">
+        {{ plato.precio | currency:'PEN':'S/ ':'1.2-2' }}
+      </strong>
+
+      <button
+        type="button"
+        class="btn btn-primary btn-sm"
+        (click)="seleccionarPlato.emit(plato)">
+
+        Pedir
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

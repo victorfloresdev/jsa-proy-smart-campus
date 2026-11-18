@@ -1,0 +1,146 @@
+.formulario-container {
+  max-width: 650px;
+  margin: 35px auto;
+  padding: 28px;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, .08);
+  color: #1f2937;
+}
+
+.encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.encabezado h1 {
+  margin: 0 0 8px;
+  font-size: 25px;
+}
+
+.encabezado p {
+  margin: 0;
+  color: #6b7280;
+}
+
+button {
+  border: none;
+  border-radius: 8px;
+  padding: 11px 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-volver {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+
+.campo label {
+  font-weight: 600;
+}
+
+.campo select,
+.campo input,
+.campo textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: inherit;
+  color: #1f2937;
+  background: white;
+}
+
+.campo textarea {
+  resize: vertical;
+  min-height: 85px;
+}
+
+.campo select:focus,
+.campo input:focus,
+.campo textarea:focus {
+  outline: 2px solid #93c5fd;
+  border-color: #2563eb;
+}
+
+.error {
+  color: #dc2626;
+}
+
+.detalle-plato {
+  padding: 16px;
+  margin-bottom: 22px;
+  border-radius: 10px;
+  background: #eff6ff;
+}
+
+.detalle-plato span {
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.detalle-plato h2 {
+  margin: 8px 0;
+  font-size: 19px;
+}
+
+.detalle-plato p {
+  margin-bottom: 0;
+}
+
+.resumen {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px;
+  margin: 24px 0;
+  border-radius: 10px;
+  background: #f0fdf4;
+}
+
+.resumen strong {
+  font-size: 23px;
+  color: #15803d;
+}
+
+.btn-guardar {
+  width: 100%;
+  background: #2563eb;
+  color: white;
+  font-size: 16px;
+}
+
+.btn-guardar:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .formulario-container {
+    margin: 16px;
+    padding: 20px;
+  }
+
+  .encabezado {
+    flex-direction: column;
+  }
+
+  .encabezado h1 {
+    font-size: 22px;
+  }
+}

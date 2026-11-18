@@ -1,29 +1,66 @@
-import { Component, inject } from '@angular/core';
-import { SesionService } from '../../../../core/services/sesion.service';
+import { Component, OnInit, computed } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+
+import { CafeteriaService } from '../../services/cafeteria.service';
+import { PlatoCardComponent } from '../../components/plato-card/plato-card.component';
 
 @Component({
   selector: 'app-cafeteria-panel',
   standalone: true,
-  template: `
-    <div class="card shadow-sm border-0">
-      <div class="card-body p-4">
-        <div class="d-flex align-items-center gap-2 mb-2">
-          <i class="bi bi-cup-hot fs-3 text-primary"></i>
-          <h2 class="h4 mb-0">Módulo 1: Menú y Cafetería</h2>
-        </div>
-        <p class="text-muted mb-3">
-          Módulo base listo para implementar en la rama <code>feat/cafeteria</code>.
-        </p>
-        <ul class="list-group list-group-flush small">
-          <li class="list-group-item px-0"><strong>Ruta:</strong> <code>/cafeteria</code></li>
-          <li class="list-group-item px-0"><strong>Endpoint:</strong> <code>http://localhost:3000/pedidos</code></li>
-          <li class="list-group-item px-0"><strong>Carpeta:</strong> <code>src/app/modules/cafeteria/</code></li>
-          <li class="list-group-item px-0"><strong>Sesión activa:</strong> {{ sesionService.usuarioActivo() }}</li>
-        </ul>
-      </div>
-    </div>
-  `
+  imports: [
+    CommonModule,
+    PlatoCardComponent
+  ],
+  templateUrl: './cafeteria-panel.component.html',
+  styleUrl: './cafeteria-panel.component.css'
 })
-export class CafeteriaPanelComponent {
-  readonly sesionService = inject(SesionService);
+export class CafeteriaPanelComponent implements OnInit {
+
+  // Indicadores calculados automáticamente
+  readonly pedidosTotales = computed(
+    () => this.cafeteria.pedidos().length
+  );
+
+  readonly pedidosEnPreparacion = computed(
+    () => this.cafeteria.pedidos().filter(
+      pedido => pedido.estado === 'En preparación'
+    ).length
+  );
+
+  readonly recaudacionTotal = computed(
+    () => this.cafeteria.pedidos().reduce(
+      (total, pedido) => total + pedido.total,
+      0
+    )
+  );
+
+  constructor(
+    public cafeteria: CafeteriaService,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    this.cafeteria.listar();
+  }
+
+  nuevoPedido(): void {
+    this.router.navigate(['/cafeteria/nuevo-pedido']);
+  }
+
+  nuevoPedidoConPlato(nombre: string): void {
+    this.router.navigate(['/cafeteria/nuevo-pedido'], {
+      queryParams: { plato: nombre }
+    });
+  }
+
+  marcarEntregado(id: number): void {
+    this.cafeteria.marcarEntregado(id).subscribe();
+  }
+
+  eliminarPedido(id: number): void {
+    if (confirm('¿Deseas cancelar este pedido?')) {
+      this.cafeteria.eliminar(id).subscribe();
+    }
+  }
 }

@@ -1,0 +1,167 @@
+<div class="container py-4">
+
+  <!-- Encabezado -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold">Cafetería SmartCampus</h2>
+      <p class="text-muted">Menú del día y gestión de pedidos</p>
+    </div>
+
+    <button class="btn btn-primary" (click)="nuevoPedido()">
+      + Nuevo pedido
+    </button>
+  </div>
+
+  <!-- Estados de carga y error -->
+  <div *ngIf="cafeteria.cargando()" class="alert alert-info">
+    Cargando información...
+  </div>
+
+  <div *ngIf="cafeteria.error()" class="alert alert-danger">
+    {{ cafeteria.error() }}
+  </div>
+
+  <ng-container *ngIf="!cafeteria.cargando() && !cafeteria.error()">
+
+    <!-- KPIs -->
+    <h4 class="fw-bold mb-3">Resumen de Cafetería</h4>
+
+    <div class="row g-3 mb-5">
+
+      <div class="col-md-4">
+        <div class="card shadow-sm border-primary h-100">
+          <div class="card-body">
+            <h6 class="text-muted">Pedidos totales</h6>
+            <h2 class="fw-bold text-primary">
+              {{ pedidosTotales() }}
+            </h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card shadow-sm border-warning h-100">
+          <div class="card-body">
+            <h6 class="text-muted">En preparación</h6>
+            <h2 class="fw-bold text-warning">
+              {{ pedidosEnPreparacion() }}
+            </h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card shadow-sm border-success h-100">
+          <div class="card-body">
+            <h6 class="text-muted">Recaudación total</h6>
+            <h2 class="fw-bold text-success">
+              S/ {{ recaudacionTotal().toFixed(2) }}
+            </h2>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Menú del día -->
+    <h4 class="fw-bold mb-3">Menú del día</h4>
+
+    <div class="row g-3 mb-5">
+
+      <div
+        class="col-md-6 col-lg-4"
+        *ngFor="let plato of cafeteria.menuDelDia">
+
+        <app-plato-card
+          [plato]="plato"
+          (seleccionarPlato)="nuevoPedidoConPlato($event.plato)">
+        </app-plato-card>
+
+      </div>
+
+    </div>
+
+    <!-- Historial -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4 class="fw-bold mb-0">Historial de pedidos</h4>
+      <span class="badge bg-primary">
+        {{ pedidosTotales() }} pedidos
+      </span>
+    </div>
+
+    <div *ngIf="cafeteria.pedidos().length === 0"
+         class="alert alert-secondary">
+      Todavía no hay pedidos registrados.
+    </div>
+
+    <div class="row g-3">
+
+      <div
+        class="col-md-6 col-lg-4"
+        *ngFor="let pedido of cafeteria.pedidos()">
+
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+
+            <h5 class="card-title">{{ pedido.plato }}</h5>
+
+            <p class="text-muted mb-2">
+              {{ pedido.categoria }}
+            </p>
+
+            <p class="mb-1">
+              <strong>Cliente:</strong> {{ pedido.autor }}
+            </p>
+
+            <p class="mb-1">
+              <strong>Cantidad:</strong> {{ pedido.cantidad }}
+            </p>
+
+            <p class="mb-1">
+              <strong>Precio:</strong> S/ {{ pedido.precio.toFixed(2) }}
+            </p>
+
+            <p class="mb-1">
+              <strong>Total:</strong> S/ {{ pedido.total.toFixed(2) }}
+            </p>
+
+            <p class="text-muted small mb-2">
+              <strong>Fecha:</strong>
+              {{ pedido.fecha | date:'dd/MM/yyyy HH:mm' }}
+            </p>
+
+            <span
+              class="badge"
+              [class.bg-warning]="pedido.estado === 'En preparación'"
+              [class.bg-success]="pedido.estado === 'Entregado'">
+              {{ pedido.estado }}
+            </span>
+
+            <div class="d-flex gap-2 mt-3">
+
+              <button
+                *ngIf="pedido.estado === 'En preparación'"
+                class="btn btn-success btn-sm"
+                (click)="marcarEntregado(pedido.id!)">
+                Entregar
+              </button>
+
+              <button
+                *ngIf="pedido.estado === 'En preparación'"
+                class="btn btn-danger btn-sm"
+                (click)="eliminarPedido(pedido.id!)">
+                Cancelar pedido
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </ng-container>
+
+</div>
