@@ -1,3 +1,8 @@
+export interface Parada {
+  lugar: string;
+  horaAprox: string;
+}
+
 export interface RutaCarpooling {
   id?: number;
   origen: string;
@@ -10,4 +15,5 @@ export interface RutaCarpooling {
   contacto: string;
   conductor: string;
   pasajeros?: string[];
+  paradas: Parada[];
 }

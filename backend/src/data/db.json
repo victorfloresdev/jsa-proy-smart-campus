@@ -175,7 +175,11 @@
       "precio": 5,
       "contacto": "987654321",
       "conductor": "Ana García (Ing. Sistemas)",
-      "pasajeros": []
+      "pasajeros": [],
+      "paradas": [
+        { "lugar": "Óvalo Grau", "horaAprox": "07:25" },
+        { "lugar": "Real Plaza", "horaAprox": "07:35" }
+      ]
     },
     {
       "id": 2,
@@ -188,7 +192,10 @@
       "precio": 4.5,
       "contacto": "965432198",
       "conductor": "Luis Mendoza (Arquitectura)",
-      "pasajeros": []
+      "pasajeros": [],
+      "paradas": [
+        { "lugar": "Av. Vice - Grifo Primax", "horaAprox": "15:40" }
+      ]
     },
     {
       "id": 3,
@@ -201,7 +208,11 @@
       "precio": 6,
       "contacto": "943218765",
       "conductor": "Mg. Anthony Távara (Docente)",
-      "pasajeros": []
+      "pasajeros": [],
+      "paradas": [
+        { "lugar": "Óvalo Cáceres", "horaAprox": "21:25" },
+        { "lugar": "Open Plaza", "horaAprox": "21:35" }
+      ]
     },
     {
       "id": 4,
@@ -214,7 +225,8 @@
       "precio": 4,
       "contacto": "912345678",
       "conductor": "Carlos Rojas (Administración)",
-      "pasajeros": []
+      "pasajeros": [],
+      "paradas": []
     },
     {
       "id": 5,
@@ -227,7 +239,8 @@
       "precio": 5,
       "contacto": "999999999",
       "conductor": "Mg. Anthony Távara (Docente)",
-      "pasajeros": []
+      "pasajeros": [],
+      "paradas": []
     }
   ]
 }

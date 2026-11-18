@@ -1,6 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 
+export interface Parada {
+  lugar: string;
+  horaAprox: string;
+}
+
 export interface RutaCarpooling {
   id: number;
   origen: string;
@@ -13,6 +18,7 @@ export interface RutaCarpooling {
   contacto: string;
   conductor: string;
   pasajeros?: string[];
+  paradas: Parada[];
 }
 
 const DB_PATH = path.resolve(__dirname, '../data/db.json');

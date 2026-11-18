@@ -1,8 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SesionService } from '../../../../core/services/sesion.service';
-import { RutaCarpooling } from '../../models/ruta-carpooling.model';
+import { Parada, RutaCarpooling } from '../../models/ruta-carpooling.model';
 import { CarpoolingService } from '../../services/carpooling.service';
 
 @Component({
@@ -36,7 +36,8 @@ export class CarpoolingFormComponent implements OnInit {
       vehiculo: ['', Validators.required],
       cupos: [3, [Validators.required, Validators.min(0)]],
       precio: [5.0, [Validators.required, Validators.min(0)]],
-      contacto: ['', [Validators.required, Validators.pattern(/^9\d{8}$/)]]
+      contacto: ['', [Validators.required, Validators.pattern(/^9\d{8}$/)]],
+      paradas: this.fb.array([])
     },
     { validators: this.validarFechaHoraFutura }
   );
@@ -67,6 +68,25 @@ export class CarpoolingFormComponent implements OnInit {
     return this.form.controls;
   }
 
+  // Getter para acceder a la lista dinámica de paradas (FormArray)
+  get paradas(): FormArray {
+    return this.form.get('paradas') as FormArray;
+  }
+
+  // Agrega una nueva fila (objeto Parada) al FormArray
+  agregarParada(lugar = '', horaAprox = ''): void {
+    const fila = this.fb.group({
+      lugar: [lugar, [Validators.required, Validators.minLength(2)]],
+      horaAprox: [horaAprox, [Validators.required, Validators.pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)]]
+    });
+    this.paradas.push(fila);
+  }
+
+  // Elimina una parada del FormArray según su posición
+  eliminarParada(index: number): void {
+    this.paradas.removeAt(index);
+  }
+
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
@@ -76,6 +96,8 @@ export class CarpoolingFormComponent implements OnInit {
         next: (ruta) => {
           this.conductorOriginal = ruta.conductor;
           this.form.patchValue(ruta);
+          this.paradas.clear();
+          (ruta.paradas || []).forEach((p) => this.agregarParada(p.lugar, p.horaAprox));
         }
       });
     }
@@ -90,6 +112,10 @@ export class CarpoolingFormComponent implements OnInit {
     }
 
     const valores = this.form.value;
+    const paradasLimpias: Parada[] = (valores.paradas || []).map((p: Parada) => ({
+      lugar: p.lugar.trim(),
+      horaAprox: p.horaAprox
+    }));
 
     if (this.esEdicion && this.id !== null) {
       const payload: RutaCarpooling = {
@@ -102,7 +128,8 @@ export class CarpoolingFormComponent implements OnInit {
         cupos: Number(valores.cupos),
         precio: Number(valores.precio),
         contacto: valores.contacto.trim(),
-        conductor: this.conductorOriginal || this.sesionService.usuarioActivo()
+        conductor: this.conductorOriginal || this.sesionService.usuarioActivo(),
+        paradas: paradasLimpias
       };
 
       this.carpoolingService.modificar(this.id, payload).subscribe({
@@ -121,7 +148,8 @@ export class CarpoolingFormComponent implements OnInit {
         cupos: Number(valores.cupos),
         precio: Number(valores.precio),
         contacto: valores.contacto.trim(),
-        conductor: this.sesionService.usuarioActivo()
+        conductor: this.sesionService.usuarioActivo(),
+        paradas: paradasLimpias
       };
 
       this.carpoolingService.agregar(nuevaRuta).subscribe({
