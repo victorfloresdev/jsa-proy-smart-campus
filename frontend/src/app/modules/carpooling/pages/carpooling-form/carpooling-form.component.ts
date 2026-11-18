@@ -1,8 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SesionService } from '../../../../core/services/sesion.service';
-import { EstadoRuta, RutaCarpooling } from '../../models/ruta-carpooling.model';
+import { Parada, RutaCarpooling } from '../../models/ruta-carpooling.model';
 import { CarpoolingService } from '../../services/carpooling.service';
 
 @Component({
@@ -20,117 +20,144 @@ export class CarpoolingFormComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
 
   esEdicion = false;
-  rutaId: number | null = null;
+  id: number | null = null;
   enviado = false;
-  guardando = false;
-  errorCarga: string | null = null;
+  conductorOriginal = '';
+  errorBackend = '';
 
-  private autorOriginal = '';
-  private pasajerosActuales: string[] = [];
+  readonly fechaHoy = this.obtenerFechaLocalHoy();
 
-  private readonly fechaHoyISO = new Date().toISOString().split('T')[0];
+  form: FormGroup = this.fb.group(
+    {
+      origen: ['', [Validators.required, Validators.minLength(3)]],
+      destino: ['Campus UTP', [Validators.required, Validators.minLength(3)]],
+      fecha: [this.fechaHoy, Validators.required],
+      hora: ['', [Validators.required, Validators.pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)]],
+      vehiculo: ['', Validators.required],
+      cupos: [3, [Validators.required, Validators.min(0)]],
+      precio: [5.0, [Validators.required, Validators.min(0)]],
+      contacto: ['', [Validators.required, Validators.pattern(/^9\d{8}$/)]],
+      paradas: this.fb.array([])
+    },
+    { validators: this.validarFechaHoraFutura }
+  );
 
-  form: FormGroup = this.fb.group({
-    origen: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(80)]],
-    destino: ['Campus UTP', [Validators.required, Validators.minLength(3), Validators.maxLength(80)]],
-    puntosIntermedios: ['', [Validators.required, Validators.minLength(5)]],
-    fechaSalida: [this.fechaHoyISO, [Validators.required]],
-    horaSalida: ['07:30', [Validators.required, Validators.pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)]],
-    turno: ['Mañana', [Validators.required]],
-    vehiculo: ['', [Validators.required, Validators.minLength(5)]],
-    asientosTotales: [4, [Validators.required, Validators.min(1), Validators.max(6)]],
-    asientosDisponibles: [4, [Validators.required, Validators.min(1), Validators.max(6)]],
-    aporteSugerido: [5.0, [Validators.required, Validators.min(0), Validators.max(50)]],
-    telefonoContacto: ['', [Validators.required, Validators.pattern(/^9\d{8}$/)]],
-    observaciones: ['', [Validators.maxLength(250)]]
-  });
+  // Obtiene la fecha de hoy en formato YYYY-MM-DD usando la hora local (evita desfase UTC)
+  private obtenerFechaLocalHoy(): string {
+    const hoy = new Date();
+    const anio = hoy.getFullYear();
+    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+    const dia = String(hoy.getDate()).padStart(2, '0');
+    return `${anio}-${mes}-${dia}`;
+  }
+
+  // Valida que la fecha y hora combinadas no sean anteriores al momento actual
+  private validarFechaHoraFutura(group: AbstractControl): ValidationErrors | null {
+    const fecha = group.get('fecha')?.value;
+    const hora = group.get('hora')?.value;
+    if (!fecha || !hora) return null;
+
+    const fechaRuta = new Date(`${fecha}T${hora}:00`);
+    if (isNaN(fechaRuta.getTime())) return null;
+
+    return fechaRuta < new Date() ? { fechaPasada: true } : null;
+  }
+
+  // Getter para acceso directo a controles del formulario
+  get f() {
+    return this.form.controls;
+  }
+
+  // Getter para acceder a la lista dinámica de paradas (FormArray)
+  get paradas(): FormArray {
+    return this.form.get('paradas') as FormArray;
+  }
+
+  // Agrega una nueva fila (objeto Parada) al FormArray
+  agregarParada(lugar = '', horaAprox = ''): void {
+    const fila = this.fb.group({
+      lugar: [lugar, [Validators.required, Validators.minLength(2)]],
+      horaAprox: [horaAprox, [Validators.required, Validators.pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)]]
+    });
+    this.paradas.push(fila);
+  }
+
+  // Elimina una parada del FormArray según su posición
+  eliminarParada(index: number): void {
+    this.paradas.removeAt(index);
+  }
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       this.esEdicion = true;
-      this.rutaId = Number(idParam);
-      this.form
-        .get('asientosDisponibles')
-        ?.setValidators([Validators.required, Validators.min(0), Validators.max(6)]);
-      this.form.get('asientosDisponibles')?.updateValueAndValidity();
-
-      this.carpoolingService.obtenerPorId(this.rutaId).subscribe({
+      this.id = Number(idParam);
+      this.carpoolingService.obtener(this.id).subscribe({
         next: (ruta) => {
-          this.autorOriginal = ruta.autor;
-          this.pasajerosActuales = ruta.pasajeros ?? [];
+          this.conductorOriginal = ruta.conductor;
           this.form.patchValue(ruta);
-        },
-        error: () => {
-          this.errorCarga = 'No se encontró la ruta solicitada para editar.';
+          this.paradas.clear();
+          (ruta.paradas || []).forEach((p) => this.agregarParada(p.lugar, p.horaAprox));
         }
       });
     }
-  }
-
-  esInvalido(campo: string): boolean {
-    const control = this.form.get(campo);
-    return !!(control && control.invalid && (control.touched || this.enviado));
   }
 
   onSubmit(): void {
     this.enviado = true;
+    this.errorBackend = '';
 
     if (this.form.invalid) {
-      this.form.markAllAsTouched();
       return;
     }
 
-    this.guardando = true;
     const valores = this.form.value;
+    const paradasLimpias: Parada[] = (valores.paradas || []).map((p: Parada) => ({
+      lugar: p.lugar.trim(),
+      horaAprox: p.horaAprox
+    }));
 
-    if (this.esEdicion && this.rutaId !== null) {
-      const estado: EstadoRuta =
-        Number(valores.asientosDisponibles) === 0 ? 'Completa' : 'Activa';
-
+    if (this.esEdicion && this.id !== null) {
       const payload: RutaCarpooling = {
-        ...valores,
-        id: this.rutaId,
-        asientosTotales: Number(valores.asientosTotales),
-        asientosDisponibles: Number(valores.asientosDisponibles),
-        aporteSugerido: Number(valores.aporteSugerido),
-        autor: this.autorOriginal,
-        pasajeros: this.pasajerosActuales,
-        estado
+        id: this.id,
+        origen: valores.origen.trim(),
+        destino: valores.destino.trim(),
+        fecha: valores.fecha,
+        hora: valores.hora,
+        vehiculo: valores.vehiculo.trim(),
+        cupos: Number(valores.cupos),
+        precio: Number(valores.precio),
+        contacto: valores.contacto.trim(),
+        conductor: this.conductorOriginal || this.sesionService.usuarioActivo(),
+        paradas: paradasLimpias
       };
 
-      this.carpoolingService.actualizar(this.rutaId, payload).subscribe({
-        next: () => {
-          this.guardando = false;
-          this.router.navigate(['/carpooling']);
-        },
-        error: () => {
-          this.guardando = false;
-          this.errorCarga = 'No se pudo actualizar la ruta.';
+      this.carpoolingService.modificar(this.id, payload).subscribe({
+        next: () => this.router.navigate(['/rutas']),
+        error: (err) => {
+          this.errorBackend = err?.error?.mensaje || 'No se pudo actualizar la ruta.';
         }
       });
-      return;
+    } else {
+      const nuevaRuta: Omit<RutaCarpooling, 'id'> = {
+        origen: valores.origen.trim(),
+        destino: valores.destino.trim(),
+        fecha: valores.fecha,
+        hora: valores.hora,
+        vehiculo: valores.vehiculo.trim(),
+        cupos: Number(valores.cupos),
+        precio: Number(valores.precio),
+        contacto: valores.contacto.trim(),
+        conductor: this.sesionService.usuarioActivo(),
+        paradas: paradasLimpias
+      };
+
+      this.carpoolingService.agregar(nuevaRuta).subscribe({
+        next: () => this.router.navigate(['/rutas']),
+        error: (err) => {
+          this.errorBackend = err?.error?.mensaje || 'No se pudo publicar la ruta.';
+        }
+      });
     }
-
-    const nuevaRuta: Omit<RutaCarpooling, 'id'> = {
-      ...valores,
-      asientosTotales: Number(valores.asientosTotales),
-      asientosDisponibles: Number(valores.asientosDisponibles),
-      aporteSugerido: Number(valores.aporteSugerido),
-      autor: this.sesionService.usuarioActivo(),
-      pasajeros: [],
-      estado: 'Activa'
-    };
-
-    this.carpoolingService.crear(nuevaRuta).subscribe({
-      next: () => {
-        this.guardando = false;
-        this.router.navigate(['/carpooling']);
-      },
-      error: () => {
-        this.guardando = false;
-        this.errorCarga = 'No se pudo registrar la ruta. Verifica que el servidor backend esté activo.';
-      }
-    });
   }
 }

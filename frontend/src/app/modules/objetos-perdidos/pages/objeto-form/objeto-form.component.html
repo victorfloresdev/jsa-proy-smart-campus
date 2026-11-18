@@ -1,0 +1,160 @@
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="fw-bold mb-1">
+          <i class="bi bi-megaphone text-primary me-2"></i>Publicar Objeto
+        </h2>
+        <p class="text-muted mb-0">
+          Publicando como:
+          <span class="fw-semibold text-dark">{{ sesionService.usuarioActivo() }}</span>
+        </p>
+      </div>
+      <a routerLink="/objetos-perdidos" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>Volver al tablero
+      </a>
+    </div>
+
+    @if (errorEnvio) {
+      <div class="alert alert-danger" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ errorEnvio }}
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="card shadow-sm border-0 p-4">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label for="tipo" class="form-label fw-semibold">Tipo de Reporte *</label>
+          <select id="tipo" formControlName="tipo" class="form-select">
+            <option value="Perdido">Perdido (Lo busco)</option>
+            <option value="Encontrado">Encontrado (Lo hallé)</option>
+          </select>
+        </div>
+
+        <div class="col-md-8">
+          <label for="titulo" class="form-label fw-semibold">Título del Objeto *</label>
+          <input
+            id="titulo"
+            type="text"
+            formControlName="titulo"
+            class="form-control"
+            [class.is-invalid]="esInvalido('titulo')"
+            placeholder="Ej. Calculadora Científica Casio, Mochila Negra..."
+          />
+          <div class="invalid-feedback">
+            El título es obligatorio y debe tener al menos 3 caracteres.
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <label for="categoria" class="form-label fw-semibold">Categoría *</label>
+          <select
+            id="categoria"
+            formControlName="categoria"
+            class="form-select"
+            [class.is-invalid]="esInvalido('categoria')"
+          >
+            @for (cat of categorias; track cat) {
+              <option [value]="cat">{{ cat }}</option>
+            }
+          </select>
+          <div class="invalid-feedback">Selecciona una categoría.</div>
+        </div>
+
+        <div class="col-md-5">
+          <label for="ubicacion" class="form-label fw-semibold">Ubicación en Campus *</label>
+          <input
+            id="ubicacion"
+            type="text"
+            formControlName="ubicacion"
+            class="form-control"
+            [class.is-invalid]="esInvalido('ubicacion')"
+            placeholder="Ej. Biblioteca Central - Piso 2"
+          />
+          <div class="invalid-feedback">Indica dónde se perdió o encontró.</div>
+        </div>
+
+        <div class="col-md-3">
+          <label for="fechaSuceso" class="form-label fw-semibold">Fecha del Suceso *</label>
+          <input
+            id="fechaSuceso"
+            type="date"
+            formControlName="fechaSuceso"
+            class="form-control"
+            [class.is-invalid]="esInvalido('fechaSuceso')"
+          />
+          <div class="invalid-feedback">Selecciona la fecha.</div>
+        </div>
+
+        <div class="col-12">
+          <label for="descripcion" class="form-label fw-semibold">Descripción Detallada *</label>
+          <textarea
+            id="descripcion"
+            rows="3"
+            formControlName="descripcion"
+            class="form-control"
+            [class.is-invalid]="esInvalido('descripcion')"
+            placeholder="Describe color, marca, detalles particulares o estado del artículo..."
+          ></textarea>
+          <div class="invalid-feedback">
+            La descripción debe tener al menos 8 caracteres.
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <label for="contacto" class="form-label fw-semibold">Datos de Contacto *</label>
+          <input
+            id="contacto"
+            type="text"
+            formControlName="contacto"
+            class="form-control"
+            [class.is-invalid]="esInvalido('contacto')"
+            placeholder="Ej. 987654321 o Recepción Pabellón A"
+          />
+          <div class="invalid-feedback">Ingresa un teléfono o punto de entrega.</div>
+        </div>
+
+        <div class="col-md-6">
+          <label for="imagenUrl" class="form-label fw-semibold">URL de Fotografía (Opcional)</label>
+          <input
+            id="imagenUrl"
+            type="url"
+            formControlName="imagenUrl"
+            class="form-control"
+            placeholder="https://ejemplo.com/foto.jpg"
+          />
+          <div class="form-text">Si lo dejas vacío se usará una imagen referencial.</div>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label small text-muted mb-1">Vista previa de imagen:</label>
+          <div class="border rounded p-2 bg-light text-center">
+            <img
+              [src]="form.controls.imagenUrl.value.trim() || imagenPorDefecto"
+              alt="Vista previa del objeto"
+              (error)="onVistaPreviaError($event)"
+              class="rounded object-fit-cover"
+              style="max-height: 180px; max-width: 100%;"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+        <a routerLink="/objetos-perdidos" class="btn btn-light border">Cancelar</a>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="form.invalid || guardando"
+        >
+          @if (guardando) {
+            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+            Publicando...
+          } @else {
+            <i class="bi bi-send me-1"></i>Publicar Reporte
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,92 @@
+{
+  "reservas": [
+    {
+      "id": 1,
+      "espacio": "Losa Deportiva 1",
+      "tipoEspacio": "Deportivo",
+      "fecha": "2026-11-14",
+      "bloqueHorario": "10:00 - 12:00",
+      "cantidadPersonas": 2,
+      "motivo": "Practica del equipo de basket de ingenieria",
+      "estado": "Confirmada",
+      "autor": "Ana García (Ing. Sistemas)"
+    },
+    {
+      "id": 2,
+      "espacio": "Laboratorio de Redes A-202",
+      "tipoEspacio": "Laboratorio",
+      "fecha": "2026-11-14",
+      "bloqueHorario": "14:00 - 16:00",
+      "cantidadPersonas": 2,
+      "motivo": "Practica 2 de la seccion 40471",
+      "estado": "Confirmada",
+      "autor": "Ana García (Ing. Sistemas)"
+    },
+    {
+      "id": 3,
+      "espacio": "Sala de Dibujo C-101",
+      "tipoEspacio": "Taller",
+      "fecha": "2026-11-14",
+      "bloqueHorario": "14:00 - 16:00",
+      "cantidadPersonas": 8,
+      "motivo": "Critica de maquetas de la seccion 42430",
+      "estado": "Confirmada",
+      "autor": "Luis Mendoza (Arquitectura)"
+    },
+    {
+      "id": 4,
+      "espacio": "Cubículo de Estudio B-104",
+      "tipoEspacio": "Sala de Estudio",
+      "fecha": "2026-11-17",
+      "bloqueHorario": "10:00 - 12:00",
+      "motivo": "aaaaaaa",
+      "cantidadPersonas": 2,
+      "estado": "Confirmada",
+      "autor": "Ana García (Ing. Sistemas)"
+    },
+    {
+      "id": 5,
+      "espacio": "Sala de Dibujo C-101",
+      "tipoEspacio": "Taller",
+      "fecha": "2026-11-17",
+      "bloqueHorario": "10:00 - 12:00",
+      "motivo": "ASADASDADDDS",
+      "cantidadPersonas": 2,
+      "estado": "Confirmada",
+      "autor": "Luis Mendoza (Arquitectura)"
+    },
+    {
+      "id": 6,
+      "espacio": "Losa Deportiva 1",
+      "tipoEspacio": "Deportivo",
+      "fecha": "2026-11-17",
+      "bloqueHorario": "08:00 - 10:00",
+      "motivo": "asadaajsf",
+      "cantidadPersonas": 4,
+      "estado": "Confirmada",
+      "autor": "Elena Vargas (Derecho)"
+    },
+    {
+      "id": 7,
+      "espacio": "Losa Deportiva 1",
+      "tipoEspacio": "Deportivo",
+      "fecha": "2026-11-17",
+      "bloqueHorario": "16:00 - 18:00",
+      "motivo": "q3425fsd",
+      "cantidadPersonas": 4,
+      "estado": "Confirmada",
+      "autor": "Luis Mendoza (Arquitectura)"
+    },
+    {
+      "id": 8,
+      "espacio": "Auditorio Principal",
+      "tipoEspacio": "Conferencia",
+      "fecha": "2026-11-18",
+      "bloqueHorario": "08:00 - 10:00",
+      "motivo": "kjgdluf",
+      "cantidadPersonas": 2,
+      "estado": "Confirmada",
+      "autor": "Luis Mendoza (Arquitectura)"
+    }
+  ]
+}

@@ -1,30 +1,35 @@
 <section class="row justify-content-center">
-  <div class="col-lg-9">
+  <div class="col-lg-8">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h1 class="h3 fw-bold mb-0">
         <i class="bi bi-car-front-fill text-primary me-2"></i>
         {{ esEdicion ? 'Editar Ruta de Carpooling' : 'Publicar Nueva Ruta' }}
       </h1>
-      <a routerLink="/carpooling" class="btn btn-outline-secondary btn-sm">
+      <a routerLink="/rutas" class="btn btn-outline-secondary btn-sm">
         <i class="bi bi-arrow-left me-1"></i>Volver al directorio
       </a>
     </div>
 
+    <!-- Indicador de usuario activo -->
     <div class="alert alert-info d-flex align-items-center mb-4">
       <i class="bi bi-person-badge-fill fs-5 me-2"></i>
       <div>
-        Publicando ruta como: <strong>{{ sesionService.usuarioActivo() }}</strong>
+        Publicando como conductor: <strong>{{ sesionService.usuarioActivo() }}</strong>
       </div>
     </div>
 
-    @if (errorCarga) {
-      <div class="alert alert-danger">{{ errorCarga }}</div>
+    @if (errorBackend) {
+      <div class="alert alert-danger d-flex align-items-center mb-4">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <div>{{ errorBackend }}</div>
+      </div>
     }
 
     <div class="card border-0 shadow-sm">
       <div class="card-body p-4">
         <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
           <div class="row g-3">
+            <!-- Origen -->
             <div class="col-md-6">
               <label for="origen" class="form-label fw-semibold">Origen *</label>
               <input
@@ -33,15 +38,16 @@
                 class="form-control"
                 formControlName="origen"
                 placeholder="Ej: Plaza de Armas de Piura"
-                [class.is-invalid]="esInvalido('origen')"
+                [class.is-invalid]="f['origen'].errors && (f['origen'].touched || enviado)"
               />
-              @if (esInvalido('origen')) {
+              @if (f['origen'].errors && (f['origen'].touched || enviado)) {
                 <div class="invalid-feedback">
-                  Ingresa un punto de origen válido (entre 3 y 80 caracteres).
+                  El origen es obligatorio y requiere al menos 3 caracteres.
                 </div>
               }
             </div>
 
+            <!-- Destino -->
             <div class="col-md-6">
               <label for="destino" class="form-label fw-semibold">Destino *</label>
               <input
@@ -50,179 +56,183 @@
                 class="form-control"
                 formControlName="destino"
                 placeholder="Ej: Campus UTP"
-                [class.is-invalid]="esInvalido('destino')"
+                [class.is-invalid]="f['destino'].errors && (f['destino'].touched || enviado)"
               />
-              @if (esInvalido('destino')) {
+              @if (f['destino'].errors && (f['destino'].touched || enviado)) {
                 <div class="invalid-feedback">
-                  Ingresa un destino válido (entre 3 y 80 caracteres).
+                  El destino es obligatorio y requiere al menos 3 caracteres.
                 </div>
               }
             </div>
 
-            <div class="col-12">
-              <label for="puntosIntermedios" class="form-label fw-semibold">Puntos intermedios *</label>
+            <!-- Fecha -->
+            <div class="col-md-6">
+              <label for="fecha" class="form-label fw-semibold">Fecha de salida *</label>
               <input
-                id="puntosIntermedios"
-                type="text"
-                class="form-control"
-                formControlName="puntosIntermedios"
-                placeholder="Ej: Av. Grau, Óvalo Cáceres, Av. Vice"
-                [class.is-invalid]="esInvalido('puntosIntermedios')"
-              />
-              @if (esInvalido('puntosIntermedios')) {
-                <div class="invalid-feedback">
-                  Indica las referencias de ruta (mínimo 5 caracteres).
-                </div>
-              }
-            </div>
-
-            <div class="col-md-4">
-              <label for="fechaSalida" class="form-label fw-semibold">Fecha de salida *</label>
-              <input
-                id="fechaSalida"
+                id="fecha"
                 type="date"
+                [min]="fechaHoy"
                 class="form-control"
-                formControlName="fechaSalida"
-                [class.is-invalid]="esInvalido('fechaSalida')"
+                formControlName="fecha"
+                [class.is-invalid]="(f['fecha'].errors || form.errors?.['fechaPasada']) && (f['fecha'].touched || enviado)"
               />
-              @if (esInvalido('fechaSalida')) {
-                <div class="invalid-feedback">La fecha de salida es obligatoria.</div>
+              @if (f['fecha'].errors && (f['fecha'].touched || enviado)) {
+                <div class="invalid-feedback">La fecha es obligatoria.</div>
               }
             </div>
 
-            <div class="col-md-4">
-              <label for="horaSalida" class="form-label fw-semibold">Hora de salida (HH:MM) *</label>
+            <!-- Hora -->
+            <div class="col-md-6">
+              <label for="hora" class="form-label fw-semibold">Hora de salida *</label>
               <input
-                id="horaSalida"
-                type="text"
+                id="hora"
+                type="time"
                 class="form-control"
-                formControlName="horaSalida"
-                placeholder="07:30"
-                [class.is-invalid]="esInvalido('horaSalida')"
+                formControlName="hora"
+                [class.is-invalid]="(f['hora'].errors || form.errors?.['fechaPasada']) && (f['hora'].touched || enviado)"
               />
-              @if (esInvalido('horaSalida')) {
-                <div class="invalid-feedback">Usa el formato 24h HH:MM (ej. 07:30 o 18:45).</div>
+              @if (f['hora'].errors && (f['hora'].touched || enviado)) {
+                <div class="invalid-feedback">Selecciona una hora válida (formato 24h HH:MM).</div>
               }
             </div>
 
-            <div class="col-md-4">
-              <label for="turno" class="form-label fw-semibold">Turno *</label>
-              <select
-                id="turno"
-                class="form-select"
-                formControlName="turno"
-                [class.is-invalid]="esInvalido('turno')"
-              >
-                <option value="Mañana">Mañana</option>
-                <option value="Tarde">Tarde</option>
-                <option value="Noche">Noche</option>
-              </select>
-              @if (esInvalido('turno')) {
-                <div class="invalid-feedback">Selecciona un turno.</div>
-              }
-            </div>
+            @if (form.errors?.['fechaPasada'] && (f['fecha'].touched || f['hora'].touched || enviado)) {
+              <div class="col-12">
+                <div class="alert alert-danger py-2 small mb-0">
+                  <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                  La fecha y hora de salida deben ser posteriores al momento actual.
+                </div>
+              </div>
+            }
 
-            <div class="col-md-8">
-              <label for="vehiculo" class="form-label fw-semibold">Vehículo y placa *</label>
+            <!-- Vehículo -->
+            <div class="col-md-12">
+              <label for="vehiculo" class="form-label fw-semibold">Vehículo (Marca / Modelo / Color) *</label>
               <input
                 id="vehiculo"
                 type="text"
                 class="form-control"
                 formControlName="vehiculo"
-                placeholder="Ej: Toyota Corolla Cross - Blanco (Placa P1A-452)"
-                [class.is-invalid]="esInvalido('vehiculo')"
+                placeholder="Ej: Toyota Yaris Plomo - ABC-123"
+                [class.is-invalid]="f['vehiculo'].errors && (f['vehiculo'].touched || enviado)"
               />
-              @if (esInvalido('vehiculo')) {
-                <div class="invalid-feedback">
-                  Ingresa los datos del vehículo (mínimo 5 caracteres).
-                </div>
+              @if (f['vehiculo'].errors && (f['vehiculo'].touched || enviado)) {
+                <div class="invalid-feedback">Indica los datos del vehículo.</div>
               }
             </div>
 
+            <!-- Cupos -->
             <div class="col-md-4">
-              <label for="telefonoContacto" class="form-label fw-semibold">Celular de contacto *</label>
+              <label for="cupos" class="form-label fw-semibold">Cupos disponibles *</label>
               <input
-                id="telefonoContacto"
-                type="text"
+                id="cupos"
+                type="number"
+                min="0"
+                max="10"
                 class="form-control"
-                formControlName="telefonoContacto"
+                formControlName="cupos"
+                [class.is-invalid]="f['cupos'].errors && (f['cupos'].touched || enviado)"
+              />
+              @if (f['cupos'].errors && (f['cupos'].touched || enviado)) {
+                <div class="invalid-feedback">Indica un número válido de cupos (0 o más).</div>
+              }
+            </div>
+
+            <!-- Precio -->
+            <div class="col-md-4">
+              <label for="precio" class="form-label fw-semibold">Aporte sugerido (S/) *</label>
+              <input
+                id="precio"
+                type="number"
+                step="0.5"
+                min="0"
+                class="form-control"
+                formControlName="precio"
+                [class.is-invalid]="f['precio'].errors && (f['precio'].touched || enviado)"
+              />
+              @if (f['precio'].errors && (f['precio'].touched || enviado)) {
+                <div class="invalid-feedback">Ingresa un monto válido en soles.</div>
+              }
+            </div>
+
+            <!-- Contacto -->
+            <div class="col-md-4">
+              <label for="contacto" class="form-label fw-semibold">Celular de contacto *</label>
+              <input
+                id="contacto"
+                type="tel"
+                maxlength="9"
+                class="form-control"
+                formControlName="contacto"
                 placeholder="987654321"
-                [class.is-invalid]="esInvalido('telefonoContacto')"
+                [class.is-invalid]="f['contacto'].errors && (f['contacto'].touched || enviado)"
               />
-              @if (esInvalido('telefonoContacto')) {
-                <div class="invalid-feedback">
-                  Debe ser un celular peruano de 9 dígitos que inicie en 9.
+              @if (f['contacto'].errors && (f['contacto'].touched || enviado)) {
+                <div class="invalid-feedback">Debe ser un celular de 9 dígitos que inicie con 9.</div>
+              }
+            </div>
+
+            <!-- Paradas intermedias (Maestro-Detalle con FormArray) -->
+            <div class="col-12 mt-4 pt-3 border-top" formArrayName="paradas">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <label class="form-label fw-semibold mb-0">
+                  <i class="bi bi-signpost-2 text-primary me-1"></i>Paradas intermedias (opcional)
+                </label>
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="agregarParada()">
+                  <i class="bi bi-plus-circle me-1"></i>Agregar parada
+                </button>
+              </div>
+
+              @for (fila of paradas.controls; track $index) {
+                <div class="row g-2 align-items-start mb-2" [formGroupName]="$index">
+                  <div class="col-md-6">
+                    <input
+                      type="text"
+                      class="form-control form-control-sm"
+                      formControlName="lugar"
+                      placeholder="Lugar (ej: Óvalo Grau)"
+                      [class.is-invalid]="fila.get('lugar')?.errors && (fila.get('lugar')?.touched || enviado)"
+                    />
+                    @if (fila.get('lugar')?.errors && (fila.get('lugar')?.touched || enviado)) {
+                      <div class="invalid-feedback">Ingresa un lugar válido (mínimo 2 caracteres).</div>
+                    }
+                  </div>
+
+                  <div class="col-md-4">
+                    <input
+                      type="time"
+                      class="form-control form-control-sm"
+                      formControlName="horaAprox"
+                      [class.is-invalid]="fila.get('horaAprox')?.errors && (fila.get('horaAprox')?.touched || enviado)"
+                    />
+                    @if (fila.get('horaAprox')?.errors && (fila.get('horaAprox')?.touched || enviado)) {
+                      <div class="invalid-feedback">Selecciona una hora aproximada válida.</div>
+                    }
+                  </div>
+
+                  <div class="col-md-2">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-danger w-100"
+                      (click)="eliminarParada($index)"
+                    >
+                      <i class="bi bi-trash"></i> Quitar
+                    </button>
+                  </div>
                 </div>
-              }
-            </div>
-
-            <div class="col-md-4">
-              <label for="asientosTotales" class="form-label fw-semibold">Asientos totales *</label>
-              <input
-                id="asientosTotales"
-                type="number"
-                class="form-control"
-                formControlName="asientosTotales"
-                [class.is-invalid]="esInvalido('asientosTotales')"
-              />
-              @if (esInvalido('asientosTotales')) {
-                <div class="invalid-feedback">Debe estar entre 1 y 6 asientos.</div>
-              }
-            </div>
-
-            <div class="col-md-4">
-              <label for="asientosDisponibles" class="form-label fw-semibold">Asientos disponibles *</label>
-              <input
-                id="asientosDisponibles"
-                type="number"
-                class="form-control"
-                formControlName="asientosDisponibles"
-                [class.is-invalid]="esInvalido('asientosDisponibles')"
-              />
-              @if (esInvalido('asientosDisponibles')) {
-                <div class="invalid-feedback">
-                  Ingresa una cantidad válida (entre {{ esEdicion ? 0 : 1 }} y 6).
-                </div>
-              }
-            </div>
-
-            <div class="col-md-4">
-              <label for="aporteSugerido" class="form-label fw-semibold">Aporte sugerido (S/) *</label>
-              <input
-                id="aporteSugerido"
-                type="number"
-                step="0.50"
-                class="form-control"
-                formControlName="aporteSugerido"
-                [class.is-invalid]="esInvalido('aporteSugerido')"
-              />
-              @if (esInvalido('aporteSugerido')) {
-                <div class="invalid-feedback">El aporte debe estar entre S/ 0 y S/ 50.</div>
-              }
-            </div>
-
-            <div class="col-12">
-              <label for="observaciones" class="form-label fw-semibold">Observaciones</label>
-              <textarea
-                id="observaciones"
-                rows="2"
-                class="form-control"
-                formControlName="observaciones"
-                placeholder="Indicaciones adicionales sobre equipaje o punto exacto de encuentro..."
-                [class.is-invalid]="esInvalido('observaciones')"
-              ></textarea>
-              @if (esInvalido('observaciones')) {
-                <div class="invalid-feedback">Máximo 250 caracteres permitidos.</div>
+              } @empty {
+                <p class="text-muted small fst-italic mb-0">
+                  Sin paradas intermedias (viaje directo). Haz clic en "Agregar parada" si harás escalas.
+                </p>
               }
             </div>
           </div>
 
+          <!-- Botones de acción -->
           <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
-            <a routerLink="/carpooling" class="btn btn-outline-secondary">Cancelar</a>
-            <button type="submit" class="btn btn-primary" [disabled]="guardando">
-              @if (guardando) {
-                <span class="spinner-border spinner-border-sm me-1"></span>
-              }
+            <a routerLink="/rutas" class="btn btn-outline-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary px-4">
+              <i class="bi bi-check2-circle me-1"></i>
               {{ esEdicion ? 'Guardar Cambios' : 'Publicar Ruta' }}
             </button>
           </div>

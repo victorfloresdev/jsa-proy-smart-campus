@@ -1,0 +1,207 @@
+<div class="container py-3">
+  <!-- Navegación superior / miga de pan -->
+  <div class="mb-3">
+    <a routerLink="/tickets" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
+      <i class="bi bi-arrow-left"></i>
+      <span>Volver al listado de tickets</span>
+    </a>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+      <div class="card shadow-sm border-0">
+        <!-- Encabezado de la tarjeta -->
+        <div class="card-header bg-primary text-white py-3">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-plus-circle-fill fs-4"></i>
+            <div>
+              <h1 class="h5 mb-0 fw-bold">Reportar Incidencia de Mantenimiento</h1>
+              <p class="small mb-0 opacity-75">
+                Registra un ticket de falla o requerimiento para el equipo técnico del campus.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body p-4">
+          @if (mensajeError) {
+            <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 mb-4" role="alert">
+              <i class="bi bi-exclamation-triangle-fill fs-5 flex-shrink-0"></i>
+              <div class="flex-grow-1">{{ mensajeError }}</div>
+              <button type="button" class="btn-close" (click)="mensajeError = null" aria-label="Cerrar"></button>
+            </div>
+          }
+
+          <form [formGroup]="ticketForm" (ngSubmit)="guardar()" novalidate>
+            <!-- Título de la incidencia -->
+            <div class="mb-3">
+              <label for="titulo" class="form-label fw-semibold">
+                Título del problema <span class="text-danger">*</span>
+              </label>
+              <input
+                id="titulo"
+                type="text"
+                class="form-control"
+                placeholder="Ej. Proyector sin señal HDMI, aire acondicionado con goteo..."
+                formControlName="titulo"
+                [class.is-invalid]="campoInvalido('titulo')"
+              />
+              @if (campoInvalido('titulo')) {
+                <div class="invalid-feedback">
+                  El título es obligatorio y debe tener al menos 5 caracteres.
+                </div>
+              }
+            </div>
+
+            <!-- Pabellón y Ambiente en fila de dos columnas -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="pabellon" class="form-label fw-semibold">
+                  Pabellón / Edificio <span class="text-danger">*</span>
+                </label>
+                <select
+                  id="pabellon"
+                  class="form-select"
+                  formControlName="pabellon"
+                  [class.is-invalid]="campoInvalido('pabellon')"
+                >
+                  <option value="" disabled>-- Selecciona un pabellón --</option>
+                  @for (pab of pabellones; track pab) {
+                    <option [value]="pab">{{ pab }}</option>
+                  }
+                </select>
+                @if (campoInvalido('pabellon')) {
+                  <div class="invalid-feedback">
+                    Selecciona el pabellón correspondiente.
+                  </div>
+                }
+              </div>
+
+              <div class="col-md-6">
+                <label for="ambiente" class="form-label fw-semibold">
+                  Ambiente / Aula <span class="text-danger">*</span>
+                </label>
+                <input
+                  id="ambiente"
+                  type="text"
+                  class="form-control"
+                  placeholder="Ej. Aula 402, Laboratorio 3, Sala de Docentes..."
+                  formControlName="ambiente"
+                  [class.is-invalid]="campoInvalido('ambiente')"
+                />
+                @if (campoInvalido('ambiente')) {
+                  <div class="invalid-feedback">
+                    El ambiente es obligatorio.
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Nivel de Prioridad -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold d-block">
+                Nivel de Prioridad <span class="text-danger">*</span>
+              </label>
+              <div class="d-flex flex-wrap gap-3">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    id="prioridadBaja"
+                    value="Baja"
+                    formControlName="prioridad"
+                  />
+                  <label class="form-check-label" for="prioridadBaja">
+                    <span class="badge bg-info text-dark">Baja</span>
+                    <small class="text-muted ms-1">(Mobiliario menor, estética)</small>
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    id="prioridadMedia"
+                    value="Media"
+                    formControlName="prioridad"
+                  />
+                  <label class="form-check-label" for="prioridadMedia">
+                    <span class="badge bg-warning text-dark">Media</span>
+                    <small class="text-muted ms-1">(Luminarias, aire acondicionado)</small>
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    id="prioridadAlta"
+                    value="Alta"
+                    formControlName="prioridad"
+                  />
+                  <label class="form-check-label" for="prioridadAlta">
+                    <span class="badge bg-danger text-white">Alta</span>
+                    <small class="text-muted ms-1">(Proyectores de clase, red, emergencias)</small>
+                  </label>
+                </div>
+              </div>
+              @if (campoInvalido('prioridad')) {
+                <div class="text-danger small mt-1">
+                  Debes seleccionar una prioridad.
+                </div>
+              }
+            </div>
+
+            <!-- Descripción detallada -->
+            <div class="mb-4">
+              <label for="descripcion" class="form-label fw-semibold">
+                Descripción detallada de la falla <span class="text-danger">*</span>
+              </label>
+              <textarea
+                id="descripcion"
+                rows="4"
+                class="form-control"
+                placeholder="Describe claramente la incidencia ocurrida (mínimo 10 caracteres)..."
+                formControlName="descripcion"
+                [class.is-invalid]="campoInvalido('descripcion')"
+              ></textarea>
+              @if (campoInvalido('descripcion')) {
+                <div class="invalid-feedback">
+                  La descripción es obligatoria y debe tener al menos 10 caracteres.
+                </div>
+              }
+            </div>
+
+            <!-- Banner informativo del autor en sesión -->
+            <div class="alert alert-light border d-flex align-items-center gap-2 mb-4">
+              <i class="bi bi-person-badge-fill fs-4 text-primary"></i>
+              <div class="small">
+                El ticket se registrará a nombre de:
+                <strong class="text-dark">{{ sesionService.usuarioActivo() }}</strong>
+                con estado inicial <strong>Pendiente</strong>.
+              </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="d-flex justify-content-end gap-2">
+              <a routerLink="/tickets" class="btn btn-outline-secondary">
+                Cancelar
+              </a>
+              <button
+                type="submit"
+                class="btn btn-primary d-flex align-items-center gap-2"
+                [disabled]="guardando"
+              >
+                @if (guardando) {
+                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  <span>Guardando...</span>
+                } @else {
+                  <i class="bi bi-send-fill"></i>
+                  <span>Registrar Incidencia</span>
+                }
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
